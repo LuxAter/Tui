@@ -48,3 +48,8 @@ void tui::NoRaw() {
   tcsetattr(0, TCSANOW, &term);
   raw_ = false;
 }
+
+void tui::Clear() {
+  printf("\033[2J");
+  printf("HEllo World");
+}

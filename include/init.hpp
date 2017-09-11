@@ -14,6 +14,7 @@ namespace tui {
     NO_CURSOR = 5
   };
   bool InitTui();
+  bool TermTui();
   int HasColor();
 }  // namespace tui
 

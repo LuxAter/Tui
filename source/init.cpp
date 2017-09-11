@@ -3,7 +3,18 @@
 #include <stdlib.h>
 #include <string>
 
-bool tui::InitTui() { return true; }
+#include "terminal/terminal.hpp"
+
+bool tui::InitTui() {
+  SaveTerm();
+  Clear();
+  return true;
+}
+
+bool tui::TermTui() {
+  RestoreTerm();
+  return true;
+}
 
 int tui::HasColor() {
   int color_access = NO_COLOR;

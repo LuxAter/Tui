@@ -18,6 +18,8 @@ namespace tui {
 
   void Raw();
   void NoRaw();
+
+  void Clear();
 }  // namespace tui
 
 #endif /* ifndef TUI_TERMINAL_TERMINAL_HPP */
