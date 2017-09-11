@@ -1,0 +1,45 @@
+#ifndef TUI_INPUT_KEYS_HPP
+#define TUI_INPUT_KEYS_HPP
+
+namespace tui {
+  enum KeyCodes {
+    KEY_SPACE = 32,
+    KEY_EXCLAMATION_MARK = 33,
+    KEY_QUOTATION_MARK = 34,
+    KEY_NUMBER_SIGN = 35,
+    KEY_DOLLAR_SIGN = 36,
+    KEY_PERCENT_SIGN = 37,
+    KEY_AMPERSAND = 38,
+    KEY_APOSTROPHE = 39,
+    KEY_LEFT_PARENTHESIS = 40,
+    KEY_RIGHT_PARENTHESIS = 41,
+    KEY_ASTERISK = 42,
+    KEY_PLUS = 43,
+    KEY_COMMA = 44,
+    KEY_LOW_LINE = 45,
+    KEY_MINUS = 46,
+    KEY_SOLIDUS = 47,
+    KEY_ZERO = 48,
+    KEY_ONE = 49,
+    KEY_TWO = 50,
+    KEY_THREE = 51,
+    KEY_FOUR = 52,
+    KEY_FIVE = 53,
+    KEY_SIX = 54,
+    KEY_SEVEN = 55,
+    KEY_EIGHT = 56,
+    KEY_NINE = 57,
+    KEY_COLON = 58,
+    KEY_SEMICOLON = 59,
+    KEY_LESS_THAN_SIGN = 60,
+    KEY_EQUALS_SIGN = 61,
+    KEY_GREATER_THAN_SIGN = 62,
+
+    KEY_UP = 128,
+    KEY_DOWN = 129,
+    KEY_RIGHT = 130,
+    KEY_LEFT = 131,
+  };
+}  // namespace tui
+
+#endif /* ifndef TUI_INPUT_KEYS_HPP */

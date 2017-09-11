@@ -49,7 +49,4 @@ void tui::NoRaw() {
   raw_ = false;
 }
 
-void tui::Clear() {
-  printf("\033[2J");
-  printf("HEllo World");
-}
+void tui::Clear() { printf("\033[2J"); }
