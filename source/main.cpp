@@ -7,7 +7,7 @@ int main(int argc, const char* argv[]) {
   tui::Raw();
   tui::NoEcho();
   std::cout << "Enter: \n";
-  tui::SetTimeout(10000);
+  // tui::SetTimeout(10000);
   unsigned int ch = tui::getch();
   std::cout << ch << "<<\n";
   tui::Echo();

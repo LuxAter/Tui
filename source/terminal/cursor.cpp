@@ -11,6 +11,10 @@ void tui::MoveCursor(int x, int y) {
 }
 
 void tui::SetCursor(int x, int y) {
-  cursor_position_[0] = x;
-  cursor_position_[1] = y;
+  if (x != -1) {
+    cursor_position_[0] = x;
+  }
+  if (y != -1) {
+    cursor_position_[1] = y;
+  }
 }

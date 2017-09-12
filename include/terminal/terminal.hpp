@@ -20,6 +20,7 @@ namespace tui {
   void NoRaw();
 
   void Clear();
+  void ClearLine();
 }  // namespace tui
 
 #endif /* ifndef TUI_TERMINAL_TERMINAL_HPP */

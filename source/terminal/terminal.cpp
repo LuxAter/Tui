@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <termios.h>
 
+#include "terminal/cursor.hpp"
+
 void tui::SaveTerm() { tcgetattr(0, &base_term_); }
 
 void tui::RestoreTerm() { tcsetattr(0, TCSANOW, &base_term_); }
@@ -49,4 +51,12 @@ void tui::NoRaw() {
   raw_ = false;
 }
 
-void tui::Clear() { printf("\033[2J\n"); }
+void tui::Clear() {
+  printf("\033[2J\n");
+  SetCursor(0, 0);
+}
+
+void tui::ClearLine() {
+  printf("\033[2K\n");
+  SetCursor(0, -1);
+}
