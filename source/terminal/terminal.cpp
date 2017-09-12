@@ -24,12 +24,12 @@ void tui::NoEcho() {
 }
 
 void tui::Cursor() {
-  printf("\033[?25h");
+  printf("\033[?25h\n");
   cursor_ = true;
 }
 
 void tui::NoCursor() {
-  printf("\033[?25l");
+  printf("\033[?25l\n");
   cursor_ = false;
 }
 
@@ -49,4 +49,4 @@ void tui::NoRaw() {
   raw_ = false;
 }
 
-void tui::Clear() { printf("\033[2J"); }
+void tui::Clear() { printf("\033[2J\n"); }
