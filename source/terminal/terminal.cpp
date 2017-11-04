@@ -5,6 +5,11 @@
 
 #include "terminal/cursor.hpp"
 
+namespace tui {
+  static struct termios base_term_;
+  static bool echo_ = true, cursor_ = true, raw_ = false;
+}  // namespace tui
+
 void tui::SaveTerm() { tcgetattr(0, &base_term_); }
 
 void tui::RestoreTerm() { tcsetattr(0, TCSANOW, &base_term_); }

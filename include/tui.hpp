@@ -8,4 +8,7 @@
 
 #include "terminal/terminal.hpp"
 
+#include "output/attr.hpp"
+#include "output/buffer.hpp"
+
 #endif /* ifndef TUI_HPP */

@@ -4,6 +4,7 @@
 #include <string>
 
 namespace tui {
+
   enum ColorSets { NO_COLOR = 0, COLOR_16 = 1, COLOR_256 = 2, TRUE_COLOR = 3 };
   enum InitFlags {
     ECHO = 0,
@@ -13,6 +14,7 @@ namespace tui {
     CURSOR = 4,
     NO_CURSOR = 5
   };
+  extern unsigned int _color_access;
   bool InitTui();
   bool TermTui();
   int HasColor();

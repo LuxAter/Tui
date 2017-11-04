@@ -4,8 +4,6 @@
 #include <termios.h>
 
 namespace tui {
-  static struct termios base_term_;
-  static bool echo_ = true, cursor_ = true, raw_ = false;
 
   void SaveTerm();
   void RestoreTerm();
