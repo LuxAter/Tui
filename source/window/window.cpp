@@ -1,6 +1,7 @@
 #include "window/window.hpp"
 
 #include <stdarg.h>
+#include <wchar.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -29,10 +30,39 @@ void tui::Window::Refresh() { Show(); }
 
 void tui::Window::Clear() { window_buffer_.Clear(); }
 
-void tui::Window::Print(std::string str, ...) {
+void tui::Window::Print(std::wstring str, ...) {
   va_list args;
   va_start(args, str);
   Print(str, args);
+  va_end(args);
+}
+
+void tui::Window::mvPrint(unsigned x, unsigned y, std::wstring str, ...) {
+  va_list args;
+  va_start(args, str);
+  mvPrint(x, y, str, args);
+  va_end(args);
+}
+void tui::Window::Print(std::wstring str, va_list args) {
+  wchar_t buffer[255];
+  vswprintf(buffer, sizeof(buffer), str.c_str(), args);
+  window_buffer_.Write(cursor[0], cursor[1], std::wstring(buffer),
+                       active_attrs_, active_color_, active_background_color_);
+}
+
+void tui::Window::mvPrint(unsigned x, unsigned y, std::wstring str,
+                          va_list args) {
+  wchar_t buffer[255];
+  vswprintf(buffer, sizeof(buffer), str.c_str(), args);
+  cursor = {{x, y}};
+  window_buffer_.Write(cursor[0], cursor[1], std::wstring(buffer),
+                       active_attrs_, active_color_, active_background_color_);
+}
+
+void tui::Window::Print(std::string str, ...) {
+  va_list args;
+  va_start(args, str);
+  Print(GetWString(str), args);
   va_end(args);
 }
 
@@ -43,19 +73,19 @@ void tui::Window::mvPrint(unsigned x, unsigned y, std::string str, ...) {
   va_end(args);
 }
 void tui::Window::Print(std::string str, va_list args) {
-  char buffer[255];
-  vsnprintf(buffer, sizeof(buffer), str.c_str(), args);
-  window_buffer_.Write(cursor[0], cursor[1], std::string(buffer), active_attrs_,
-                       active_color_, active_background_color_);
+  wchar_t buffer[255];
+  vswprintf(buffer, sizeof(buffer), GetWString(str).c_str(), args);
+  window_buffer_.Write(cursor[0], cursor[1], std::wstring(buffer),
+                       active_attrs_, active_color_, active_background_color_);
 }
 
 void tui::Window::mvPrint(unsigned x, unsigned y, std::string str,
                           va_list args) {
-  char buffer[255];
-  vsnprintf(buffer, sizeof(buffer), str.c_str(), args);
+  wchar_t buffer[255];
+  vswprintf(buffer, sizeof(buffer), GetWString(str).c_str(), args);
   cursor = {{x, y}};
-  window_buffer_.Write(cursor[0], cursor[1], std::string(buffer), active_attrs_,
-                       active_color_, active_background_color_);
+  window_buffer_.Write(cursor[0], cursor[1], std::wstring(buffer),
+                       active_attrs_, active_color_, active_background_color_);
 }
 
 void tui::Window::Fill(unsigned int ch) {

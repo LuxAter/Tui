@@ -4,11 +4,16 @@
 #include <iostream>
 
 int main(int argc, const char* argv[]) {
-  // std::string unicode = "\u251C";
+  // std::vector<std::string> un = {"\u0000", "\u1000", "\u2000", "\u3000",
+  // "\u4000", "\u5000", "\u6000", "\u7000",
+  // "\u8000", "\u9000", "\uA000"};
+  // for (int j = 0; j < un.size(); j++) {
+  // std::string unicode = un[j];
   // std::cout << unicode << ":\n";
   // for (int i = 0; i < unicode.size(); i++) {
   // std::cout << "  " << unicode[i] << ">" << static_cast<int>(unicode[i])
   // << "\n";
+  // }
   // }
   tui::ColorPair a{{255, 0, 255}, {156, 156, 0}};
   tui::InitTui();
@@ -21,13 +26,13 @@ int main(int argc, const char* argv[]) {
   ss.Fill(' ');
   ss.Box();
   tui::SetTimeout(1);
-  tui::stdscr.Print("Hello\u251bWorld");
+  tui::Print(L"Hello World");
   s.Show();
   tui::Refresh();
   time_t t = time(NULL);
   double fps = 0;
   while (true) {
-    s.Print("%i", rand());
+    // s.Print("%i", rand());
     ss.Show();
     s.Show();
     tui::Refresh();

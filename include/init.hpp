@@ -27,8 +27,12 @@ namespace tui {
 
   void Refresh();
 
+  void Print(std::wstring str, ...);
   void Print(std::string str, ...);
+  void mvPrint(unsigned x, unsigned y, std::wstring str, ...);
   void mvPrint(unsigned x, unsigned y, std::string str, ...);
+
+  std::wstring GetWString(std::string str);
 
   tui::Window CreateWindow();
   tui::Window CreateWindow(int w, int h);

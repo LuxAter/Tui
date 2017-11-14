@@ -30,7 +30,7 @@ namespace tui {
     void OffSet(unsigned int x, unsigned int y);
     void SetTarget(tui::Buffer* _target);
 
-    void Write(unsigned int& x, unsigned int& y, std::string str,
+    void Write(unsigned int& x, unsigned int& y, std::wstring str,
                std::vector<std::string> attrs, std::string color,
                std::string background_color);
     void Write(unsigned int x, unsigned int y, Char ch);

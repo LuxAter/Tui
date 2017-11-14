@@ -21,6 +21,10 @@ namespace tui {
 
     void Clear();
 
+    void Print(std::wstring str, ...);
+    void mvPrint(unsigned x, unsigned y, std::wstring str, ...);
+    void Print(std::wstring str, va_list args);
+    void mvPrint(unsigned x, unsigned y, std::wstring str, va_list args);
     void Print(std::string str, ...);
     void mvPrint(unsigned x, unsigned y, std::string str, ...);
     void Print(std::string str, va_list args);

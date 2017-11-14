@@ -68,7 +68,7 @@ void tui::Buffer::OffSet(unsigned int x, unsigned int y) { offset = {{x, y}}; }
 
 void tui::Buffer::SetTarget(tui::Buffer* _target) { target = _target; }
 
-void tui::Buffer::Write(unsigned int& x, unsigned int& y, std::string str,
+void tui::Buffer::Write(unsigned int& x, unsigned int& y, std::wstring str,
                         std::vector<std::string> attrs, std::string color,
                         std::string background_color) {
   unsigned int head[2] = {x, y};

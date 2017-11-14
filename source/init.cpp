@@ -68,18 +68,38 @@ void tui::Clear() { stdscr.Clear(); }
 
 void tui::Refresh() { stdscr.Refresh(); }
 
-void tui::Print(std::string str, ...) {
+void tui::Print(std::wstring str, ...) {
   va_list args;
   va_start(args, str);
   stdscr.Print(str, args);
   va_end(args);
 }
 
-void tui::mvPrint(unsigned x, unsigned y, std::string str, ...) {
+void tui::Print(std::string str, ...) {
+  va_list args;
+  va_start(args, str);
+  stdscr.Print(GetWString(str), args);
+  va_end(args);
+}
+
+void tui::mvPrint(unsigned x, unsigned y, std::wstring str, ...) {
   va_list args;
   va_start(args, str);
   stdscr.mvPrint(x, y, str, args);
   va_end(args);
+}
+
+void tui::mvPrint(unsigned x, unsigned y, std::string str, ...) {
+  va_list args;
+  va_start(args, str);
+  stdscr.mvPrint(x, y, GetWString(str), args);
+  va_end(args);
+}
+
+std::wstring tui::GetWString(std::string str) {
+  std::wstring temp(str.length(), L' ');
+  std::copy(str.begin(), str.end(), temp.begin());
+  return temp;
 }
 
 tui::Window tui::CreateWindow() { return stdscr.CreateWindow(); }
