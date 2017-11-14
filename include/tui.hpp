@@ -5,6 +5,7 @@
 
 #include "input/input.hpp"
 #include "input/keys.hpp"
+#include "input/unicode.hpp"
 
 #include "terminal/terminal.hpp"
 

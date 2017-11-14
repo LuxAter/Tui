@@ -23,8 +23,15 @@ int main(int argc, const char* argv[]) {
   tui::Window s = tui::CreateWindow(5, 5, 40, 40);
   tui::Window ss = s.CreateWindow(5, 5, 20, 20);
   // ss.Print("Hello WOrld");
+  s.Box();
+  s.EnableBorder();
+  s.mvPrint(5, 0, "HELLO");
+  s.Move(1, 1);
   ss.Fill(' ');
   ss.Box();
+  ss.EnableBorder();
+  // ss.Box('+', tui::UTF_VERTICAL_DOUBLE_DASH,
+  // tui::UTF_HORIZONTAL_DOUBLE_DASH);
   tui::SetTimeout(1);
   tui::Print(L"Hello World");
   s.Show();
@@ -32,7 +39,7 @@ int main(int argc, const char* argv[]) {
   time_t t = time(NULL);
   double fps = 0;
   while (true) {
-    // s.Print("%i", rand());
+    s.Print(L"%i", rand());
     ss.Show();
     s.Show();
     tui::Refresh();
@@ -40,6 +47,8 @@ int main(int argc, const char* argv[]) {
     unsigned int ch = tui::getch();
     if (ch == tui::KEY_Q) {
       break;
+    } else if (ch != tui::KEY_ERR) {
+      ss.Print(ch);
     }
   }
   t = time(NULL) - t;

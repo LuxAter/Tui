@@ -75,7 +75,7 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, std::wstring str,
   for (unsigned int i = 0; i < str.size(); i++) {
     if (str[i] == '\n') {
       head[1]++;
-      head[0] = 0;
+      head[0] = border_;
     } else {
       write_buffer[head[0]][head[1]] = str[i];
       write_buffer[head[0]][head[1]].attrs = attrs;
@@ -83,18 +83,39 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, std::wstring str,
       write_buffer[head[0]][head[1]].attrs.push_back(background_color);
       head[0]++;
     }
-    if (head[0] >= write_buffer.size()) {
-      head[0] = 0;
+    if (head[0] >= write_buffer.size() - border_) {
+      head[0] = border_;
       head[1]++;
     }
-    if (head[1] >= write_buffer[0].size()) {
+    if (head[1] >= write_buffer[0].size() - border_) {
       RollBuffer();
       head[1]--;
-      head[0] = 0;
+      head[0] = border_;
     }
   }
   x = head[0];
   y = head[1];
+}
+
+void tui::Buffer::Write(unsigned int& x, unsigned int& y, unsigned int ch,
+                        std::vector<std::string> attrs, std::string color,
+                        std::string background_color) {
+  unsigned int head[2] = {x, y};
+  write_buffer[head[0]][head[1]] = ch;
+  write_buffer[head[0]][head[1]].attrs = attrs;
+  write_buffer[head[0]][head[1]].attrs.push_back(color);
+  write_buffer[head[0]][head[1]].attrs.push_back(background_color);
+  head[0]++;
+  if (head[0] >= write_buffer.size() - border_) {
+    head[0] = border_;
+    head[1]++;
+  }
+  if (head[1] >= write_buffer[0].size() - border_) {
+    RollBuffer();
+    head[1]--;
+    head[0] = border_;
+  }
+  x = head[0], y = head[1];
 }
 
 void tui::Buffer::Write(unsigned int x, unsigned int y, Char ch) {
@@ -165,11 +186,12 @@ void tui::Buffer::WriteChar(Char ch, int x, int y) {
 }
 
 void tui::Buffer::RollBuffer() {
-  for (unsigned int i = 0; i < write_buffer.size(); i++) {
-    for (unsigned int j = 1; j < write_buffer[i].size(); j++) {
+  for (unsigned int i = border_; i < write_buffer.size() - border_; i++) {
+    for (unsigned int j = 1 + border_; j < write_buffer[i].size() - border_;
+         j++) {
       write_buffer[i][j - 1] = write_buffer[i][j];
-      if (j == write_buffer[i].size() - 1) {
-        write_buffer[i][j] = Char();
+      if (j == write_buffer[i].size() - 1 - border_) {
+        write_buffer[i][j] = Char(' ');
       }
     }
   }
@@ -178,9 +200,9 @@ void tui::Buffer::RollBuffer() {
 std::string tui::Buffer::GetChar(unsigned int ch) {
   std::string out;
 
-  if (ch <= 0x7f)
+  if (ch <= 0x7f) {
     out.append(1, static_cast<char>(ch));
-  else if (ch <= 0x7ff) {
+  } else if (ch <= 0x7ff) {
     out.append(1, static_cast<char>(0xc0 | ((ch >> 6) & 0x1f)));
     out.append(1, static_cast<char>(0x80 | (ch & 0x3f)));
   } else if (ch <= 0xffff) {

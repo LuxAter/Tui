@@ -29,14 +29,21 @@ namespace tui {
     void mvPrint(unsigned x, unsigned y, std::string str, ...);
     void Print(std::string str, va_list args);
     void mvPrint(unsigned x, unsigned y, std::string str, va_list args);
+    void Print(unsigned int ch);
+    void mvPrint(unsigned int x, unsigned int y, unsigned int ch);
+
+    void Move(unsigned x, unsigned y);
 
     void Fill(unsigned int ch);
     void Line(unsigned x0, unsigned y0, unsigned x1, unsigned y1,
               unsigned int ch);
 
     void Box();
+    void Box(unsigned c, unsigned v, unsigned h);
     void Box(unsigned int ul, unsigned int u, unsigned int ur, unsigned int l,
              unsigned int r, unsigned int bl, unsigned int b, unsigned int br);
+    void EnableBorder();
+    void DisableBorder();
 
     void AttrOn(Attr attr);
     void AttrOff(Attr attr);

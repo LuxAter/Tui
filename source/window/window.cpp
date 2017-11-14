@@ -88,6 +88,21 @@ void tui::Window::mvPrint(unsigned x, unsigned y, std::string str,
                        active_attrs_, active_color_, active_background_color_);
 }
 
+void tui::Window::Print(unsigned int ch) {
+  window_buffer_.Write(cursor[0], cursor[1], ch, active_attrs_, active_color_,
+                       active_background_color_);
+}
+void tui::Window::mvPrint(unsigned int x, unsigned int y, unsigned int ch) {
+  cursor = {{x, y}};
+  window_buffer_.Write(cursor[0], cursor[1], ch, active_attrs_, active_color_,
+                       active_background_color_);
+}
+
+void tui::Window::Move(unsigned x, unsigned y) {
+  cursor[0] = x;
+  cursor[1] = y;
+}
+
 void tui::Window::Fill(unsigned int ch) {
   Buffer::Char c(ch);
   c.attrs = active_attrs_;
@@ -106,6 +121,9 @@ void tui::Window::Line(unsigned int x0, unsigned int y0, unsigned int x1,
 }
 
 void tui::Window::Box() { Box(9487, 9473, 9491, 9475, 9475, 9495, 9473, 9499); }
+void tui::Window::Box(unsigned c, unsigned v, unsigned h) {
+  Box(c, h, c, v, v, c, h, c);
+}
 void tui::Window::Box(unsigned int ul, unsigned int u, unsigned int ur,
                       unsigned int l, unsigned int r, unsigned int bl,
                       unsigned int b, unsigned int br) {
@@ -132,6 +150,18 @@ void tui::Window::Box(unsigned int ul, unsigned int u, unsigned int ur,
   window_buffer_.FillLine(1, window_pos_[3] - 1, window_pos_[2] - 2,
                           window_pos_[3] - 1, c);
 }
+
+void tui::Window::EnableBorder() {
+  window_buffer_.border_ = true;
+  if (cursor[0] == 0) {
+    cursor[0]++;
+  }
+  if (cursor[1] == 0) {
+    cursor[1]++;
+  }
+}
+
+void tui::Window::DisableBorder() { window_buffer_.border_ = false; }
 
 void tui::Window::AttrOn(Attr attr) {
   if (attr == NONE) {

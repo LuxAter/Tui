@@ -33,12 +33,17 @@ namespace tui {
     void Write(unsigned int& x, unsigned int& y, std::wstring str,
                std::vector<std::string> attrs, std::string color,
                std::string background_color);
+    void Write(unsigned int& x, unsigned int& y, unsigned int ch,
+               std::vector<std::string> attrs, std::string color,
+               std::string background_color);
     void Write(unsigned int x, unsigned int y, Char ch);
     void WriteSub(unsigned int x, unsigned int y, Char ch);
 
     void Fill(Char ch);
     void FillLine(unsigned int a_x, unsigned int a_y, unsigned int b_x,
                   unsigned int b_y, Char ch);
+
+    bool border_ = false;
 
    private:
     void WriteChar(Char ch, int x, int y);
