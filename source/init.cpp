@@ -50,6 +50,8 @@ int tui::HasColor() {
       _color_access = COLOR_256;
     } else if (term == "xterm-256color") {
       _color_access = TRUE_COLOR;
+    } else if (term == "linux") {
+      _color_access = COLOR_16;
     } else {
       printf("Unknown terminal: %s", term.c_str());
     }

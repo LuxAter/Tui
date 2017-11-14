@@ -38,9 +38,6 @@ namespace tui {
     WHITE = 16
   };
 
-  extern std::vector<std::string> _active_attrs;
-  extern std::string _active_color, _active_background_color;
-
   struct ColorValue {
     ColorValue();
     ColorValue(Color color);
@@ -56,18 +53,6 @@ namespace tui {
   struct ColorPair {
     ColorValue fg, bg;
   };
-
-  void AttrOn(Attr attr);
-  void AttrOff(Attr attr);
-  void SetColor(ColorPair color);
-  void SetColor(Color color);
-  void SetColor(ColorValue color);
-  void SetColor(unsigned char color);
-  void SetColor(unsigned char r, unsigned char g, unsigned char b);
-  void SetBackground(Color color);
-  void SetBackground(ColorValue color);
-  void SetBackground(unsigned char color);
-  void SetBackground(unsigned char r, unsigned char g, unsigned char b);
 
 }  // namespace tui
 

@@ -18,6 +18,7 @@ namespace tui {
       std::vector<std::string> attrs;
       bool operator==(const Char& rhs);
       bool operator!=(const Char& rhs);
+      std::ostream& operator<<(std::ostream& out);
     };
     Buffer();
     Buffer(unsigned int w, unsigned int h);
@@ -29,9 +30,10 @@ namespace tui {
     void OffSet(unsigned int x, unsigned int y);
     void SetTarget(tui::Buffer* _target);
 
-    void Write(unsigned int& x, unsigned int& y, std::string str);
+    void Write(unsigned int& x, unsigned int& y, std::string str,
+               std::vector<std::string> attrs, std::string color,
+               std::string background_color);
     void Write(unsigned int x, unsigned int y, Char ch);
-    void WriteSub(unsigned int& x, unsigned int& y, std::string str);
     void WriteSub(unsigned int x, unsigned int y, Char ch);
 
     void Fill(Char ch);
@@ -41,6 +43,7 @@ namespace tui {
    private:
     void WriteChar(Char ch, int x, int y);
     void RollBuffer();
+    std::string GetChar(unsigned int ch);
 
     tui::Buffer* target = nullptr;
     std::vector<std::vector<Char>> display_buffer, write_buffer, sub_buffer;

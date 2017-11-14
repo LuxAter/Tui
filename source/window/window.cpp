@@ -1,8 +1,12 @@
 #include "window/window.hpp"
 
 #include <stdarg.h>
+#include <iostream>
 #include <string>
 #include <vector>
+
+#include "init.hpp"
+#include "output/buffer.hpp"
 
 tui::Window::Window() {}
 
@@ -41,7 +45,8 @@ void tui::Window::mvPrint(unsigned x, unsigned y, std::string str, ...) {
 void tui::Window::Print(std::string str, va_list args) {
   char buffer[255];
   vsnprintf(buffer, sizeof(buffer), str.c_str(), args);
-  window_buffer_.Write(cursor[0], cursor[1], std::string(buffer));
+  window_buffer_.Write(cursor[0], cursor[1], std::string(buffer), active_attrs_,
+                       active_color_, active_background_color_);
 }
 
 void tui::Window::mvPrint(unsigned x, unsigned y, std::string str,
@@ -49,10 +54,176 @@ void tui::Window::mvPrint(unsigned x, unsigned y, std::string str,
   char buffer[255];
   vsnprintf(buffer, sizeof(buffer), str.c_str(), args);
   cursor = {{x, y}};
-  window_buffer_.Write(cursor[0], cursor[1], std::string(buffer));
+  window_buffer_.Write(cursor[0], cursor[1], std::string(buffer), active_attrs_,
+                       active_color_, active_background_color_);
 }
 
-void tui::Window::Fill(char ch) { window_buffer_.Fill(ch); }
+void tui::Window::Fill(unsigned int ch) {
+  Buffer::Char c(ch);
+  c.attrs = active_attrs_;
+  c.attrs.push_back(active_color_);
+  c.attrs.push_back(active_background_color_);
+  window_buffer_.Fill(c);
+}
+
+void tui::Window::Line(unsigned int x0, unsigned int y0, unsigned int x1,
+                       unsigned int y1, unsigned int ch) {
+  Buffer::Char c(ch);
+  c.attrs = active_attrs_;
+  c.attrs.push_back(active_color_);
+  c.attrs.push_back(active_background_color_);
+  window_buffer_.FillLine(x0, y0, x1, y1, c);
+}
+
+void tui::Window::Box() { Box(9487, 9473, 9491, 9475, 9475, 9495, 9473, 9499); }
+void tui::Window::Box(unsigned int ul, unsigned int u, unsigned int ur,
+                      unsigned int l, unsigned int r, unsigned int bl,
+                      unsigned int b, unsigned int br) {
+  Buffer::Char c;
+  c.attrs = active_attrs_;
+  c.attrs.push_back(active_color_);
+  c.attrs.push_back(active_background_color_);
+  c.ch = ul;
+  window_buffer_.Write(0, 0, c);
+  c.ch = ur;
+  window_buffer_.Write(window_pos_[2] - 1, 0, c);
+  c.ch = bl;
+  window_buffer_.Write(0, window_pos_[3] - 1, c);
+  c.ch = br;
+  window_buffer_.Write(window_pos_[2] - 1, window_pos_[3] - 1, c);
+  c.ch = u;
+  window_buffer_.FillLine(1, 0, window_pos_[2] - 2, 0, c);
+  c.ch = l;
+  window_buffer_.FillLine(0, 1, 0, window_pos_[3] - 2, c);
+  c.ch = r;
+  window_buffer_.FillLine(window_pos_[2] - 1, 1, window_pos_[2] - 1,
+                          window_pos_[3] - 2, c);
+  c.ch = b;
+  window_buffer_.FillLine(1, window_pos_[3] - 1, window_pos_[2] - 2,
+                          window_pos_[3] - 1, c);
+}
+
+void tui::Window::AttrOn(Attr attr) {
+  if (attr == NONE) {
+    active_attrs_.clear();
+  }
+  unsigned int attr_int = static_cast<unsigned int>(attr);
+  char buffer[50];
+  snprintf(buffer, sizeof(buffer), "\033[%im", attr_int);
+  active_attrs_.push_back(std::string(buffer));
+}
+
+void tui::Window::AttrOff(Attr attr) {
+  unsigned int attr_int = static_cast<unsigned int>(attr);
+  char buffer[50];
+  snprintf(buffer, sizeof(buffer), "\033[%im", attr_int);
+  std::string match(buffer);
+  for (unsigned int i = 0; i < active_attrs_.size(); i++) {
+    if (active_attrs_[i] == match) {
+      active_attrs_.erase(active_attrs_.begin() + i);
+      break;
+    }
+  }
+}
+
+void tui::Window::SetColor(ColorPair color) {
+  SetColor(color.fg);
+  SetBackground(color.bg);
+}
+void tui::Window::SetColor(ColorValue color) {
+  if (color.id == 1) {
+    SetColor(color.id_enum);
+  } else if (color.id == 2) {
+    SetColor(color.id_ch);
+  } else if (color.id == 3) {
+    SetColor(color.id_r, color.id_g, color.id_b);
+  }
+}
+void tui::Window::SetColor(Color color) {
+  if (_color_access == COLOR_16 || _color_access == COLOR_256 ||
+      _color_access == TRUE_COLOR) {
+    if (color == DEFAULT) {
+      active_color_ = "\033[39m";
+    } else {
+      unsigned int color_int = static_cast<unsigned int>(color);
+      if (color_int > 8) {
+        color_int += 52;
+      }
+      color_int += 29;
+      char buffer[50];
+      snprintf(buffer, sizeof(buffer), "\033[%im", color_int);
+      active_color_ = std::string(buffer);
+    }
+  } else {
+    std::cerr << "Current terminal does not support colors\n";
+  }
+}
+void tui::Window::SetColor(unsigned char color) {
+  if (_color_access == COLOR_256 || _color_access == TRUE_COLOR) {
+    char buffer[50];
+    snprintf(buffer, sizeof(buffer), "\033[38;5;%im", color);
+    active_color_ = std::string(buffer);
+  } else {
+    std::cerr << "Current terminal does not support 256 colors\n";
+  }
+}
+void tui::Window::SetColor(unsigned char r, unsigned char g, unsigned char b) {
+  if (_color_access == TRUE_COLOR) {
+    char buffer[50];
+    snprintf(buffer, sizeof(buffer), "\033[38;2;%i;%i;%im", r, g, b);
+    active_color_ = std::string(buffer);
+  } else {
+    std::cerr << "Current terminal does not support true colors\n";
+  }
+}
+
+void tui::Window::SetBackground(ColorValue color) {
+  if (color.id == 1) {
+    SetBackground(color.id_enum);
+  } else if (color.id == 2) {
+    SetBackground(color.id_ch);
+  } else if (color.id == 3) {
+    SetBackground(color.id_r, color.id_g, color.id_b);
+  }
+}
+void tui::Window::SetBackground(Color color) {
+  if (_color_access == COLOR_16 || _color_access == COLOR_256 ||
+      _color_access == TRUE_COLOR) {
+    if (color == DEFAULT) {
+      active_background_color_ = "\033[49m";
+    } else {
+      unsigned int color_int = static_cast<unsigned int>(color);
+      if (color_int > 8) {
+        color_int += 52;
+      }
+      color_int += 39;
+      char buffer[50];
+      snprintf(buffer, sizeof(buffer), "\033[%im", color_int);
+      active_background_color_ = std::string(buffer);
+    }
+  } else {
+    std::cerr << "Current terminal does not support colors\n";
+  }
+}
+void tui::Window::SetBackground(unsigned char color) {
+  if (_color_access == COLOR_256 || _color_access == TRUE_COLOR) {
+    char buffer[50];
+    snprintf(buffer, sizeof(buffer), "\033[48;5;%im", color);
+    active_background_color_ = std::string(buffer);
+  } else {
+    std::cerr << "Current terminal does not support 256 colors\n";
+  }
+}
+void tui::Window::SetBackground(unsigned char r, unsigned char g,
+                                unsigned char b) {
+  if (_color_access == TRUE_COLOR) {
+    char buffer[50];
+    snprintf(buffer, sizeof(buffer), "\033[48;2;%i;%i;%im", r, g, b);
+    active_background_color_ = std::string(buffer);
+  } else {
+    std::cerr << "Current terminal does not support true colors\n";
+  }
+}
 
 tui::Buffer* tui::Window::GetBufferPointer() { return &window_buffer_; }
 
