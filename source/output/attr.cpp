@@ -11,33 +11,50 @@ namespace tui {
   std::string _active_color = "", _active_background_color = "";
 }  // namespace tui
 
-tui::Color::Color() {}
-tui::Color::Color(Color_ color) : id(1), id_enum(color) {}
-tui::Color::Color(unsigned char color) : id(2), id_ch(color) {}
-tui::Color::Color(unsigned char r, unsigned char g, unsigned char b)
+tui::ColorValue::ColorValue() {}
+tui::ColorValue::ColorValue(Color color) : id(1), id_enum(color) {}
+tui::ColorValue::ColorValue(unsigned char color) : id(2), id_ch(color) {}
+tui::ColorValue::ColorValue(unsigned char r, unsigned char g, unsigned char b)
     : id(3), id_r(r), id_g(g), id_b(b) {}
-tui::Color::Color(double r, double g, double b) : id(3) {
+tui::ColorValue::ColorValue(double r, double g, double b) : id(3) {
   id_r = 255 * r;
   id_g = 255 * g;
   id_b = 255 * b;
 }
-tui::Color::Color(std::initializer_list<unsigned char> l) : id(3) {
+tui::ColorValue::ColorValue(std::initializer_list<unsigned char> l) : id(3) {
   id_r = *(l.begin());
   id_g = *(l.begin() + 1);
   id_b = *(l.begin() + 2);
 }
-// tui::Color::Color(std::initializer_list<double> l) : id(3) {
-// id_r = 255 * *(l.begin());
-// id_g = 255 * *(l.begin() + 1);
-// id_b = 255 * *(l.begin() + 2);
-// }
 
-void tui::SetAttr(Attr_ attr) {}
+void tui::AttrOn(Attr attr) {
+  if (attr == NONE) {
+    _active_attrs.clear();
+  }
+  unsigned int attr_int = static_cast<unsigned int>(attr);
+  char buffer[50];
+  snprintf(buffer, sizeof(buffer), "\033[%im", attr_int);
+  _active_attrs.push_back(std::string(buffer));
+}
+
+void tui::AttrOff(Attr attr) {
+  unsigned int attr_int = static_cast<unsigned int>(attr);
+  char buffer[50];
+  snprintf(buffer, sizeof(buffer), "\033[%im", attr_int);
+  std::string match(buffer);
+  for (unsigned int i = 0; i < _active_attrs.size(); i++) {
+    if (_active_attrs[i] == match) {
+      _active_attrs.erase(_active_attrs.begin() + i);
+      break;
+    }
+  }
+}
+
 void tui::SetColor(ColorPair color) {
   SetColor(color.fg);
   SetBackground(color.bg);
 }
-void tui::SetColor(Color color) {
+void tui::SetColor(ColorValue color) {
   if (color.id == 1) {
     SetColor(color.id_enum);
   } else if (color.id == 2) {
@@ -46,7 +63,7 @@ void tui::SetColor(Color color) {
     SetColor(color.id_r, color.id_g, color.id_b);
   }
 }
-void tui::SetColor(Color_ color) {
+void tui::SetColor(Color color) {
   if (_color_access == COLOR_16 || _color_access == COLOR_256 ||
       _color_access == TRUE_COLOR) {
     if (color == DEFAULT) {
@@ -84,7 +101,7 @@ void tui::SetColor(unsigned char r, unsigned char g, unsigned char b) {
   }
 }
 
-void tui::SetBackground(Color color) {
+void tui::SetBackground(ColorValue color) {
   if (color.id == 1) {
     SetBackground(color.id_enum);
   } else if (color.id == 2) {
@@ -93,7 +110,7 @@ void tui::SetBackground(Color color) {
     SetBackground(color.id_r, color.id_g, color.id_b);
   }
 }
-void tui::SetBackground(Color_ color) {
+void tui::SetBackground(Color color) {
   if (_color_access == COLOR_16 || _color_access == COLOR_256 ||
       _color_access == TRUE_COLOR) {
     if (color == DEFAULT) {

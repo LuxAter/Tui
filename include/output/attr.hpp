@@ -7,7 +7,7 @@
 
 namespace tui {
 
-  enum Attr_ {
+  enum Attr {
     NONE = 0,
     BOLD = 1,
     FAINT = 2,
@@ -16,19 +16,9 @@ namespace tui {
     BLINK = 5,
     REVERSE = 7,
     CONCEAL = 8,
-    CROSS_OUT = 9,
-    PRIMARY = 10,
-    ALTERNATE_FONT = 11,
-    BOLD_OFF = 21,
-    NORMAL_INTENSITY = 22,
-    ITALIC_OFF = 23,
-    UNDERLINE_OFF = 24,
-    BLINK_OFF = 25,
-    INVERSE_OFF = 27,
-    CONCEAL_OFF = 28,
-    CROSS_OUT_OFF = 29
+    CROSS_OUT = 9
   };
-  enum Color_ {
+  enum Color {
     DEFAULT = 0,
     BLACK = 1,
     RED = 2,
@@ -51,31 +41,31 @@ namespace tui {
   extern std::vector<std::string> _active_attrs;
   extern std::string _active_color, _active_background_color;
 
-  struct Color {
-    Color();
-    Color(Color_ color);
-    Color(unsigned char color);
-    Color(unsigned char r, unsigned char g, unsigned char b);
-    Color(double r, double g, double b);
-    Color(std::initializer_list<unsigned char> l);
-    // Color(std::initializer_list<double> l);
+  struct ColorValue {
+    ColorValue();
+    ColorValue(Color color);
+    ColorValue(unsigned char color);
+    ColorValue(unsigned char r, unsigned char g, unsigned char b);
+    ColorValue(double r, double g, double b);
+    ColorValue(std::initializer_list<unsigned char> l);
     unsigned int id = 0;
-    Color_ id_enum;
+    Color id_enum;
     unsigned char id_ch;
     unsigned id_r, id_g, id_b;
   };
   struct ColorPair {
-    Color fg, bg;
+    ColorValue fg, bg;
   };
 
-  void SetAttr(Attr_ attr);
+  void AttrOn(Attr attr);
+  void AttrOff(Attr attr);
   void SetColor(ColorPair color);
   void SetColor(Color color);
-  void SetColor(Color_ color);
+  void SetColor(ColorValue color);
   void SetColor(unsigned char color);
   void SetColor(unsigned char r, unsigned char g, unsigned char b);
   void SetBackground(Color color);
-  void SetBackground(Color_ color);
+  void SetBackground(ColorValue color);
   void SetBackground(unsigned char color);
   void SetBackground(unsigned char r, unsigned char g, unsigned char b);
 

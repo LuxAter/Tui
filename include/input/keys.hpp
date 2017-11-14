@@ -3,6 +3,7 @@
 
 namespace tui {
   enum KeyCodes {
+    KEY_ERR = 0,
     KEY_ENTER = 10,
     KEY_ESCAPE = 27,
     KEY_SPACE = 32,

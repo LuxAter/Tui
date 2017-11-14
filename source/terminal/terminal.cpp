@@ -56,7 +56,7 @@ void tui::NoRaw() {
   raw_ = false;
 }
 
-void tui::Clear() {
+void tui::ClearScreen() {
   printf("\033[2J\n");
   SetCursor(0, 0);
 }

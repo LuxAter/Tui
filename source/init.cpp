@@ -1,25 +1,32 @@
 #include "init.hpp"
 
+#include <stdarg.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 #include <string>
 
-#include "output/buffer.hpp"
 #include "terminal/terminal.hpp"
+#include "window/window.hpp"
 
 namespace tui {
+  tui::Window stdscr;
   unsigned int _color_access = NO_COLOR;
 }  // namespace tui
 
 bool tui::InitTui() {
   SaveTerm();
-  Clear();
-  BufferInit();
+  ClearScreen();
   HasColor();
+  struct winsize size;
+  ioctl(0, TIOCGWINSZ, &size);
+  int w = size.ws_row, h = size.ws_col;
+  stdscr = tui::Window(0, 0, w, h);
+  stdscr.GetBufferPointer()->SetDisplayBuffer(true);
   return true;
 }
 
 bool tui::TermTui() {
-  Clear();
+  ClearScreen();
   printf("\033[0;0H");
   fflush(stdout);
   RestoreTerm();
@@ -53,4 +60,31 @@ int tui::HasColor() {
     }
   }
   return _color_access;
+}
+
+void tui::Clear() { stdscr.Clear(); }
+
+void tui::Refresh() { stdscr.Refresh(); }
+
+void tui::Print(std::string str, ...) {
+  va_list args;
+  va_start(args, str);
+  stdscr.Print(str, args);
+  va_end(args);
+}
+
+void tui::mvPrint(unsigned x, unsigned y, std::string str, ...) {
+  va_list args;
+  va_start(args, str);
+  stdscr.mvPrint(x, y, str, args);
+  va_end(args);
+}
+
+tui::Window tui::CreateWindow() { return stdscr.CreateWindow(); }
+
+tui::Window tui::CreateWindow(int w, int h) {
+  return stdscr.CreateWindow(w, h);
+}
+tui::Window tui::CreateWindow(int x, int y, int w, int h) {
+  return stdscr.CreateWindow(x, y, w, h);
 }

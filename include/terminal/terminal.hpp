@@ -17,7 +17,7 @@ namespace tui {
   void Raw();
   void NoRaw();
 
-  void Clear();
+  void ClearScreen();
   void ClearLine();
 }  // namespace tui
 
