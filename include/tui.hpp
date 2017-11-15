@@ -12,6 +12,7 @@
 #include "output/attr.hpp"
 #include "output/buffer.hpp"
 
+#include "window/canvas.hpp"
 #include "window/window.hpp"
 
 #endif /* ifndef TUI_HPP */

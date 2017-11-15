@@ -27,21 +27,21 @@ tui::Buffer::Buffer(unsigned int w, unsigned int h) {
   size[0] = w;
   size[1] = h;
   display_buffer =
-      std::vector<std::vector<Char>>(h, std::vector<Char>(w, Char()));
+      std::vector<std::vector<Char>>(w, std::vector<Char>(h, Char()));
   write_buffer = display_buffer;
   sub_buffer = display_buffer;
 }
 
 void tui::Buffer::Clear() {
   write_buffer = std::vector<std::vector<Char>>(
-      size[1], std::vector<Char>(size[0], Char()));
+      size[0], std::vector<Char>(size[1], Char()));
   sub_buffer = write_buffer;
 }
 
 void tui::Buffer::Swap() {
   Char null;
-  for (unsigned int i = 0; i < size[1]; i++) {
-    for (unsigned int j = 0; j < size[0]; j++) {
+  for (unsigned int i = 0; i < size[0]; i++) {
+    for (unsigned int j = 0; j < size[1]; j++) {
       if ((write_buffer[i][j] != null &&
            display_buffer[i][j] != write_buffer[i][j]) ||
           (sub_buffer[i][j] != null &&
@@ -72,6 +72,15 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, std::wstring str,
                         std::vector<std::string> attrs, std::string color,
                         std::string background_color) {
   unsigned int head[2] = {x, y};
+  if (head[0] >= write_buffer.size() - border_) {
+    head[0] = border_;
+    head[1]++;
+  }
+  if (head[1] >= write_buffer[0].size() - border_) {
+    RollBuffer();
+    head[1]--;
+    head[0] = border_;
+  }
   for (unsigned int i = 0; i < str.size(); i++) {
     if (str[i] == '\n') {
       head[1]++;
@@ -101,6 +110,15 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, unsigned int ch,
                         std::vector<std::string> attrs, std::string color,
                         std::string background_color) {
   unsigned int head[2] = {x, y};
+  if (head[0] >= write_buffer.size() - border_) {
+    head[0] = border_;
+    head[1]++;
+  }
+  if (head[1] >= write_buffer[0].size() - border_) {
+    RollBuffer();
+    head[1]--;
+    head[0] = border_;
+  }
   write_buffer[head[0]][head[1]] = ch;
   write_buffer[head[0]][head[1]].attrs = attrs;
   write_buffer[head[0]][head[1]].attrs.push_back(color);
@@ -119,16 +137,20 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, unsigned int ch,
 }
 
 void tui::Buffer::Write(unsigned int x, unsigned int y, Char ch) {
-  write_buffer[x][y] = ch;
+  if (x < write_buffer.size() && y < write_buffer[x].size()) {
+    write_buffer[x][y] = ch;
+  }
 }
 
 void tui::Buffer::WriteSub(unsigned int x, unsigned int y, Char ch) {
-  sub_buffer[x][y] = ch;
+  if (x < sub_buffer.size() && y < sub_buffer[x].size()) {
+    sub_buffer[x][y] = ch;
+  }
 }
 
 void tui::Buffer::Fill(Char ch) {
-  for (unsigned int i = 0; i < size[1]; i++) {
-    for (unsigned int j = 0; j < size[0]; j++) {
+  for (unsigned int i = 0; i < size[0]; i++) {
+    for (unsigned int j = 0; j < size[1]; j++) {
       write_buffer[i][j] = ch;
     }
   }
@@ -136,35 +158,43 @@ void tui::Buffer::Fill(Char ch) {
 
 void tui::Buffer::FillLine(unsigned int a_x, unsigned int a_y, unsigned int b_x,
                            unsigned int b_y, Char ch) {
-  if (a_x == b_x) {
-    unsigned int tmp_max = std::max(a_y, b_y);
-    unsigned int tmp_min = std::min(a_y, b_y);
-    a_y = tmp_min;
-    b_y = tmp_max;
-    for (unsigned int i = a_y; i <= b_y; i++) {
-      write_buffer[a_x][i] = ch;
+  if (a_x < write_buffer.size() && b_x < write_buffer.size() &&
+      a_y < write_buffer[a_x].size() && b_y < write_buffer[b_x].size()) {
+    if (a_x == b_x) {
+      unsigned int tmp_max = std::max(a_y, b_y);
+      unsigned int tmp_min = std::min(a_y, b_y);
+      a_y = tmp_min;
+      b_y = tmp_max;
+      for (unsigned int i = a_y; i <= b_y; i++) {
+        write_buffer[a_x][i] = ch;
+      }
+    } else {
+      if (b_x < a_x) {
+        unsigned int tmp = a_x;
+        a_x = b_x;
+        b_x = tmp;
+        tmp = a_y;
+        a_y = b_y;
+        b_y = tmp;
+      }
+      double m = static_cast<double>(static_cast<signed int>(b_y) -
+                                     static_cast<signed int>(a_y)) /
+                 static_cast<double>(static_cast<signed int>(b_x) -
+                                     static_cast<signed int>(a_x));
+      unsigned int t = a_x;
+      while (t <= b_x) {
+        unsigned int y =
+            static_cast<unsigned int>(m * (t - static_cast<signed int>(a_x)) +
+                                      static_cast<signed int>(a_y));
+        Write(t, y, ch);
+        t++;
+      }
     }
   } else {
-    if (b_x < a_x) {
-      unsigned int tmp = a_x;
-      a_x = b_x;
-      b_x = tmp;
-      tmp = a_y;
-      a_y = b_y;
-      b_y = tmp;
-    }
-    double m = static_cast<double>(static_cast<signed int>(b_y) -
-                                   static_cast<signed int>(a_y)) /
-               static_cast<double>(static_cast<signed int>(b_x) -
-                                   static_cast<signed int>(a_x));
-    unsigned int t = a_x;
-    while (t <= b_x) {
-      unsigned int y =
-          static_cast<unsigned int>(m * (t - static_cast<signed int>(a_x)) +
-                                    static_cast<signed int>(a_y));
-      Write(t, y, ch);
-      t++;
-    }
+    std::cout << "(" << a_x << "," << a_y << "), (" << b_x << "," << b_y
+              << ") : (" << write_buffer.size() << "," << write_buffer[0].size()
+              << ")\n";
+    // std::cout << "INVALID POINT!!\n";
   }
 }
 
@@ -186,6 +216,9 @@ void tui::Buffer::WriteChar(Char ch, int x, int y) {
 }
 
 void tui::Buffer::RollBuffer() {
+  if (scroll_ == false) {
+    return;
+  }
   for (unsigned int i = border_; i < write_buffer.size() - border_; i++) {
     for (unsigned int j = 1 + border_; j < write_buffer[i].size() - border_;
          j++) {

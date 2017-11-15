@@ -3,11 +3,14 @@
 
 #include <array>
 #include <string>
+#include <vector>
 
 #include "../output/attr.hpp"
 #include "../output/buffer.hpp"
+// #include "canvas.hpp"
 
 namespace tui {
+  class Canvas;
   class Window {
    public:
     Window();
@@ -44,6 +47,8 @@ namespace tui {
              unsigned int r, unsigned int bl, unsigned int b, unsigned int br);
     void EnableBorder();
     void DisableBorder();
+    void EnableScroll();
+    void DisableScroll();
 
     void AttrOn(Attr attr);
     void AttrOff(Attr attr);
@@ -62,8 +67,12 @@ namespace tui {
     tui::Window CreateWindow();
     tui::Window CreateWindow(int w, int h);
     tui::Window CreateWindow(int x, int y, int w, int h);
+    tui::Canvas CreateCanvas();
+    tui::Canvas CreateCanvas(int w, int h);
+    tui::Canvas CreateCanvas(int x, int y, int w, int h);
 
-   private:
+   protected:
+    bool border_active_ = false;
     std::array<unsigned, 2> cursor = {{0, 0}};
     unsigned int window_index_;
     std::array<int, 4> window_pos_ = {{0, 0, 0, 0}};

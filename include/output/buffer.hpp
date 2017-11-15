@@ -44,6 +44,7 @@ namespace tui {
                   unsigned int b_y, Char ch);
 
     bool border_ = false;
+    bool scroll_ = true;
 
    private:
     void WriteChar(Char ch, int x, int y);

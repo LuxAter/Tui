@@ -8,6 +8,7 @@
 
 #include "init.hpp"
 #include "output/buffer.hpp"
+#include "window/canvas.hpp"
 
 tui::Window::Window() {}
 
@@ -152,6 +153,7 @@ void tui::Window::Box(unsigned int ul, unsigned int u, unsigned int ur,
 }
 
 void tui::Window::EnableBorder() {
+  border_active_ = true;
   window_buffer_.border_ = true;
   if (cursor[0] == 0) {
     cursor[0]++;
@@ -161,7 +163,13 @@ void tui::Window::EnableBorder() {
   }
 }
 
-void tui::Window::DisableBorder() { window_buffer_.border_ = false; }
+void tui::Window::DisableBorder() {
+  window_buffer_.border_ = false;
+  border_active_ = false;
+}
+
+void tui::Window::EnableScroll() { window_buffer_.scroll_ = true; }
+void tui::Window::DisableScroll() { window_buffer_.scroll_ = false; }
 
 void tui::Window::AttrOn(Attr attr) {
   if (attr == NONE) {
@@ -301,6 +309,24 @@ tui::Window tui::Window::CreateWindow(int w, int h) {
 
 tui::Window tui::Window::CreateWindow(int x, int y, int w, int h) {
   Window sub(x, y, w, h);
+  sub.GetBufferPointer()->SetTarget(&window_buffer_);
+  return sub;
+}
+
+tui::Canvas tui::Window::CreateCanvas() {
+  Canvas sub(window_pos_[0], window_pos_[1], window_pos_[2], window_pos_[3]);
+  sub.GetBufferPointer()->SetTarget(&window_buffer_);
+  return sub;
+}
+
+tui::Canvas tui::Window::CreateCanvas(int w, int h) {
+  Canvas sub(w, h);
+  sub.GetBufferPointer()->SetTarget(&window_buffer_);
+  return sub;
+}
+
+tui::Canvas tui::Window::CreateCanvas(int x, int y, int w, int h) {
+  Canvas sub(x, y, w, h);
   sub.GetBufferPointer()->SetTarget(&window_buffer_);
   return sub;
 }
