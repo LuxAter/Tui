@@ -19,7 +19,7 @@ bool tui::InitTui() {
   HasColor();
   struct winsize size;
   ioctl(0, TIOCGWINSZ, &size);
-  int w = size.ws_row, h = size.ws_col;
+  int h = size.ws_row, w = size.ws_col;
   stdscr = tui::Window(0, 0, w, h);
   stdscr.GetBufferPointer()->SetDisplayBuffer(true);
   return true;

@@ -20,6 +20,7 @@
 #define TUI_CANVAS_HPP_
 
 #include <array>
+#include <bitset>
 #include <string>
 #include <vector>
 
@@ -33,7 +34,7 @@ namespace tui {
     VERTICAL_BLOCK,
     HORIZONTAL_BLOCK,
     QUARTER_BLOCK,
-    BRAIL
+    BRAILLE
   };
 
   class Canvas : public tui::Window {
@@ -44,19 +45,30 @@ namespace tui {
     Canvas(const Canvas& rhs);
 
     void SetPixel(PixelFormat format);
+    void SetOrigin(int x, int y);
+    void SetOrigin(double x, double y);
 
-    void DrawPoint(unsigned int x, unsigned int y);
+    void DrawPoint(int x, int y);
 
-    unsigned int MaxX();
-    unsigned int MaxY();
+    void EnableBorder();
+    void DisableBorder();
+
+    int MaxX();
+    int MinX();
+    int MaxY();
+    int MinY();
 
    private:
     void ResizeGrid();
     void DrawPixels();
 
+    unsigned int GetChar(std::bitset<4> bits);
+    unsigned int GetChar(std::bitset<8> bits);
+
     unsigned int pixel_format_ = BLOCK;
     std::vector<std::vector<bool>> pixel_data;
-    std::array<unsigned int, 2> size_ = {{0, 0}};
+    std::array<unsigned int, 2> size_ = {{1, 1}};
+    std::array<int, 2> origin_ = {{0, 0}};
   };
 }  // namespace tui
 
