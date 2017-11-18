@@ -49,6 +49,7 @@ namespace tui {
     void SetOrigin(double x, double y);
 
     void DrawPoint(int x, int y);
+    void DrawLine(int ax, int ay, int bx, int by);
 
     void EnableBorder();
     void DisableBorder();
@@ -60,10 +61,14 @@ namespace tui {
 
    private:
     void ResizeGrid();
-    void DrawPixels();
+    void DrawPixels(unsigned int x, unsigned int y);
 
-    unsigned int GetChar(std::bitset<4> bits);
-    unsigned int GetChar(std::bitset<8> bits);
+    void DrawTwoBlock(unsigned int x, unsigned int y);
+    void DrawBlock(unsigned int x, unsigned int y);
+    void DrawVerticalBlock(unsigned int x, unsigned int y);
+    void DrawHorizontalBlock(unsigned int x, unsigned int y);
+    void DrawQuarterBlock(unsigned int x, unsigned int y);
+    void DrawBraille(unsigned int x, unsigned int y);
 
     unsigned int pixel_format_ = BLOCK;
     std::vector<std::vector<bool>> pixel_data;

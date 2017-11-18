@@ -43,8 +43,58 @@ void tui::Canvas::DrawPoint(int x, int y) {
   if (static_cast<unsigned int>(x + origin_[0]) < pixel_data.size() &&
       static_cast<unsigned int>(y + origin_[1]) < pixel_data[0].size()) {
     pixel_data[x + origin_[0]][y + origin_[1]] = true;
+    DrawPixels(x + origin_[0], y + origin_[1]);
   }
-  DrawPixels();
+}
+
+void tui::Canvas::DrawLine(int ax, int ay, int bx, int by) {
+  double m = static_cast<double>(by - ay) / static_cast<double>(bx - ax);
+  bool vert = false;
+  if (bx - ax == 0) {
+    vert = true;
+    m = 1;
+  }
+  ax += origin_[0];
+  ay += origin_[1];
+  bx += origin_[0];
+  by += origin_[1];
+  if (vert == true) {
+    if (ay > by) {
+      std::swap(ay, by);
+    }
+    for (double y = ay; y < by; y++) {
+      if (ax > 0 && ax < size_[0] && y > 0 && y < size_[1]) {
+        pixel_data[ax][y] = true;
+        DrawPixels(ax, y);
+      }
+    }
+  } else if (std::abs(m) > 1) {
+    if (ay > by) {
+      std::swap(ay, by);
+      std::swap(ax, bx);
+    }
+    double x = ax;
+    for (double y = ay; y < by; y++) {
+      x += (1.0 / m);
+      if (x > 0 && x < size_[0] && y > 0 && y < size_[1]) {
+        pixel_data[x][y] = true;
+        DrawPixels(x, y);
+      }
+    }
+  } else {
+    if (ax > bx) {
+      std::swap(ax, bx);
+      std::swap(ay, by);
+    }
+    double y = ay;
+    for (double x = ax; x < bx; x++) {
+      y += m;
+      if (x > 0 && x < size_[0] && y > 0 && y < size_[1]) {
+        pixel_data[x][y] = true;
+        DrawPixels(x, y);
+      }
+    }
+  }
 }
 
 void tui::Canvas::EnableBorder() {
@@ -108,178 +158,141 @@ void tui::Canvas::ResizeGrid() {
   origin_ = {{static_cast<int>(origin_x * size_[0]),
               static_cast<int>(origin_y * size_[1])}};
   // Print("%ix%i\n", window_pos_[2], window_pos_[3]);
-  Print("%ix%i\n", size_[0], size_[1]);
+  // Print("%ix%i\n", size_[0], size_[1]);
 }
 
-void tui::Canvas::DrawPixels() {
-  if (pixel_format_ == BLOCK) {
-    for (unsigned int i = 0; i < pixel_data.size(); i++) {
-      for (unsigned int j = 0; j < pixel_data[i].size(); j++) {
-        if (pixel_data[i][j] == true) {
-          mvPrint(i + border_active_, window_pos_[3] - j - 2 * border_active_,
-                  9608);
-        }
-      }
-    }
-  } else if (pixel_format_ == TWO_BLOCK) {
-    for (unsigned int i = 0; i < pixel_data.size(); i++) {
-      for (unsigned int j = 0; j < pixel_data[i].size(); j++) {
-        if (pixel_data[i][j] == true) {
-          mvPrint((2 * i) + border_active_,
-                  window_pos_[3] - j - 2 * border_active_, 9608);
-          mvPrint((2 * i) + border_active_ + 1,
-                  window_pos_[3] - j - 2 * border_active_, 9608);
-        }
-      }
-    }
+void tui::Canvas::DrawPixels(unsigned int x, unsigned int y) {
+  unsigned int x_step = 1;
+  unsigned int y_step = 1;
+  if (pixel_format_ == TWO_BLOCK || pixel_format_ == BLOCK) {
+    x_step = 1;
+    y_step = 1;
   } else if (pixel_format_ == VERTICAL_BLOCK) {
-    for (unsigned int i = 0; i < pixel_data.size(); i += 2) {
-      for (unsigned int j = 0; j < pixel_data[i].size(); j++) {
-        unsigned int ch = 0;
-        if (pixel_data[i][j] == true) {
-          ch = 9612;
-        }
-        if (pixel_data[i + 1][j] == true) {
-          if (ch == 0) {
-            ch = 9616;
-          } else {
-            ch = 9608;
-          }
-        }
-        if (ch != 0) {
-          mvPrint((i / 2) + border_active_ + 1,
-                  window_pos_[3] - j - 2 * border_active_, ch);
-        }
-      }
-    }
+    x_step = 2;
+    y_step = 1;
   } else if (pixel_format_ == HORIZONTAL_BLOCK) {
-    for (unsigned int i = 0; i < pixel_data.size(); i++) {
-      for (unsigned int j = 0; j < pixel_data[i].size(); j += 2) {
-        unsigned int ch = 0;
-        if (pixel_data[i][j] == true) {
-          ch = 9604;
-        }
-        if (pixel_data[i][j + 1] == true) {
-          if (ch == 0) {
-            ch = 9600;
-          } else {
-            ch = 9608;
-          }
-        }
-        if (ch != 0) {
-          mvPrint(i + border_active_ + 1,
-                  window_pos_[3] - (j / 2) - 2 * border_active_, ch);
-        }
-      }
-    }
+    x_step = 1;
+    y_step = 2;
   } else if (pixel_format_ == QUARTER_BLOCK) {
-    for (unsigned int i = 0; i < pixel_data.size(); i += 2) {
-      for (unsigned int j = 0; j < pixel_data[i].size(); j += 2) {
-        std::bitset<4> ch;
-        if (pixel_data[i][j + 1] == true) {
-          ch.set(0);
-        }
-        if (pixel_data[i + 1][j + 1] == true) {
-          ch.set(1);
-        }
-        if (pixel_data[i][j] == true) {
-          ch.set(2);
-        }
-        if (pixel_data[i + 1][j] == true) {
-          ch.set(3);
-        }
-        unsigned int c = GetChar(ch);
-        if (ch != 0) {
-          mvPrint((i / 2) + border_active_ + 1,
-                  window_pos_[3] - (j / 2) - 2 * border_active_, c);
-        }
-      }
-    }
+    x_step = 2;
+    y_step = 2;
   } else if (pixel_format_ == BRAILLE) {
-    for (unsigned int i = 0; i < pixel_data.size() - 2; i += 2) {
-      for (unsigned int j = 0; j < pixel_data[i].size() - 4; j += 4) {
-        std::bitset<8> ch;
-        if (pixel_data[i][j + 3] == true) {
-          ch.set(0);
-        }
-        if (pixel_data[i][j + 2] == true) {
-          ch.set(1);
-        }
-        if (pixel_data[i][j + 1] == true) {
-          ch.set(2);
-        }
-        if (pixel_data[i + 1][j + 3] == true) {
-          ch.set(3);
-        }
-        if (pixel_data[i + 1][j + 2] == true) {
-          ch.set(4);
-        }
-        if (pixel_data[i + 1][j + 1] == true) {
-          ch.set(5);
-        }
-        if (pixel_data[i][j] == true) {
-          ch.set(6);
-        }
-        if (pixel_data[i + 1][j] == true) {
-          ch.set(7);
-        }
-        unsigned int c = GetChar(ch);
-        if (ch != 0) {
-          mvPrint((i / 2) + border_active_ + 1,
-                  window_pos_[3] - (j / 4) - 2 * border_active_, c);
-        }
+    x_step = 2;
+    y_step = 4;
+  }
+  if (x % x_step != 0) {
+    x = x - (x % x_step);
+  }
+  if (y % y_step != 0) {
+    y = y - (y % y_step);
+  }
+  if (pixel_format_ == TWO_BLOCK) {
+    DrawTwoBlock(x, y);
+  } else if (pixel_format_ == BLOCK) {
+    DrawBlock(x, y);
+  } else if (pixel_format_ == VERTICAL_BLOCK) {
+    DrawVerticalBlock(x, y);
+  } else if (pixel_format_ == HORIZONTAL_BLOCK) {
+    DrawHorizontalBlock(x, y);
+  } else if (pixel_format_ == QUARTER_BLOCK) {
+    DrawQuarterBlock(x, y);
+  } else if (pixel_format_ == BRAILLE) {
+    DrawBraille(x, y);
+  }
+}
+
+void tui::Canvas::DrawTwoBlock(unsigned int x, unsigned int y) {
+  if (pixel_data[x][y] == true) {
+    mvPrint((x * 2) + border_active_, window_pos_[3] - y - 2 * border_active_,
+            9608);
+    mvPrint((x * 2) + 1 + border_active_,
+            window_pos_[3] - y - 2 * border_active_, 9608);
+  }
+}
+void tui::Canvas::DrawBlock(unsigned int x, unsigned int y) {
+  if (pixel_data[x][y] == true) {
+    mvPrint(x + border_active_, window_pos_[3] - y - 2 * border_active_, 9608);
+  }
+}
+void tui::Canvas::DrawVerticalBlock(unsigned int x, unsigned int y) {
+  unsigned int ch = 0;
+  if (pixel_data[x][y] == true && pixel_data[x + 1][y] == true) {
+    ch = 9608;
+  } else if (pixel_data[x][y] == true && pixel_data[x + 1][y] == false) {
+    ch = 9612;
+  } else if (pixel_data[x][y] == false && pixel_data[x + 1][y] == true) {
+    ch = 9616;
+  }
+  if (ch != 0) {
+    mvPrint((x / 2) + border_active_, window_pos_[3] - y - 2 * border_active_,
+            ch);
+  }
+}
+void tui::Canvas::DrawHorizontalBlock(unsigned int x, unsigned int y) {
+  unsigned int ch = 0;
+  if (pixel_data[x][y] == true && pixel_data[x][y + 1] == true) {
+    ch = 9608;
+  } else if (pixel_data[x][y] == true && pixel_data[x][y + 1] == false) {
+    ch = 9604;
+  } else if (pixel_data[x][y] == false && pixel_data[x][y + 1] == true) {
+    ch = 9600;
+  }
+  if (ch != 0) {
+    mvPrint(x + border_active_, window_pos_[3] - (y / 2) - 2 * border_active_,
+            ch);
+  }
+}
+void tui::Canvas::DrawQuarterBlock(unsigned int x, unsigned int y) {
+  unsigned int ch = 0;
+  std::bitset<4> val;
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
+      if (pixel_data[x + i][y + j] == true) {
+        val.set(i + (2 * j));
       }
     }
   }
-}
-
-unsigned int tui::Canvas::GetChar(std::bitset<4> bits) {
-  std::string bit_str = bits.to_string<char, std::string::traits_type,
-                                       std::string::allocator_type>();
   std::map<std::string, unsigned int> char_map = {
-      {"0000", 0},    {"0001", 9624}, {"0010", 9629}, {"0100", 9622},
-      {"1000", 9623}, {"1100", 9604}, {"1010", 9616}, {"1001", 9626},
-      {"0110", 9630}, {"0101", 9612}, {"0011", 9600}, {"1110", 9631},
-      {"1101", 9625}, {"0111", 9672}, {"1011", 9628}, {"1111", 9608}};
-  return char_map[bit_str];
+      {"0000", 0},    {"0001", 9622}, {"0010", 9623}, {"0100", 9624},
+      {"1000", 9629}, {"1100", 9600}, {"1010", 9616}, {"1001", 9630},
+      {"0110", 9626}, {"0101", 9612}, {"0011", 9604}, {"1110", 9628},
+      {"1101", 9627}, {"0111", 9625}, {"1011", 9631}, {"1111", 9608}};
+  ch = char_map[val.to_string<char, std::string::traits_type,
+                              std::string::allocator_type>()];
+  if (ch != 0) {
+    mvPrint((x / 2) + border_active_,
+            window_pos_[3] - (y / 2) - 2 * border_active_, ch);
+  }
 }
-
-unsigned int tui::Canvas::GetChar(std::bitset<8> bits) {
-  unsigned int braille = 0;
-  unsigned int tens = 0;
-  if (bits.test(0)) {
-    braille += 1;
+void tui::Canvas::DrawBraille(unsigned int x, unsigned int y) {
+  unsigned int val[2] = {0, 0};
+  if (pixel_data[x][y + 3] == true) {
+    val[0] += 1;
   }
-  if (bits.test(1)) {
-    braille += 2;
+  if (pixel_data[x][y + 2] == true) {
+    val[0] += 2;
   }
-  if (bits.test(2)) {
-    braille += 4;
+  if (pixel_data[x][y + 1] == true) {
+    val[0] += 4;
   }
-  if (bits.test(3)) {
-    braille += 8;
+  if (pixel_data[x + 1][y + 3] == true) {
+    val[0] += 8;
   }
-  if (bits.test(4)) {
-    braille += 0;
-    tens += 1;
+  if (pixel_data[x + 1][y + 2] == true) {
+    val[1] += 1;
   }
-  if (bits.test(5)) {
-    braille += 0;
-    tens += 2;
+  if (pixel_data[x + 1][y + 1] == true) {
+    val[1] += 2;
   }
-  if (bits.test(6)) {
-    braille += 0;
-    tens += 4;
+  if (pixel_data[x][y] == true) {
+    val[1] += 4;
   }
-  if (bits.test(7)) {
-    braille += 0;
-    tens += 8;
+  if (pixel_data[x + 1][y] == true) {
+    val[1] += 8;
   }
-  if (braille != 0) {
-    std::cout << bits;
-    std::cout << "> " << std::setw(3) << std::setfill(' ') << braille << "->";
-    braille = 10240 + std::stoi(std::to_string(braille), nullptr, 16);
-    std::cout << std::setw(5) << braille << "\n";
+  if (val[0] != 0 || val[1] != 0) {
+    unsigned int ch = (16 * val[1]) + val[0] + 10240;
+    mvPrint((x / 2) + border_active_,
+            window_pos_[3] - (y / 4) - 2 * border_active_, ch);
   }
-  return braille;
 }

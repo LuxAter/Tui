@@ -23,30 +23,58 @@ int main(int argc, const char* argv[]) {
   tui::Raw();
   tui::NoEcho();
   tui::NoCursor();
-  tui::Canvas canv = tui::stdscr.CreateCanvas(0, 0, 50, 50);
+  tui::Canvas canv = tui::stdscr.CreateCanvas();
+  // tui::SetTimeout(20);
   canv.DisableScroll();
   // canv.Fill('#');
   canv.Box();
   canv.EnableBorder();
+  // canv.SetPixel(tui::QUARTER_BLOCK);
   canv.SetPixel(tui::BRAILLE);
   canv.SetOrigin(0.5, 0.5);
-  canv.DrawPoint(0, 0);
-  canv.SetColor(tui::RED);
-  canv.Refresh();
-  tui::Refresh();
-  // canv.DrawPoint(1, 1);
-  // canv.SetPixel(tui::BRAIL);
+  canv.SetColor(255, 17, 129);
   for (int i = canv.MinX(); i < canv.MaxX(); i++) {
     // std::cout << "   " << i << "\n";
+    // canv.DrawPoint(i, 0.01 * i);
     // canv.DrawPoint(i, i);
-    canv.DrawPoint(i, 0.001 * pow(i, 3));
+    // canv.DrawPoint(i, 0.001 * pow(i, 3));
     canv.Refresh();
     tui::Refresh();
-    // canv.DrawPoint(i, 5 * sin(i / 5.0));
+    // canv.DrawPoint(i, 10 * tan(i / 50.0));
+    // canv.SetColor(10 * tan(i / 50.0), 10 * tan(i / 50.0), 10 * tan(i /
+    // 50.0));
+    // canv.SetColor(i, i, 255);
+    double freq = 20.0;
+    double scale = 33.333;
+    // canv.SetColor(tui::RED);
+    // canv.DrawPoint(
+    // i, scale * sin((i / 2.0) / freq) * sin((10.0 * i / 2.0) / freq));
+    // canv.SetColor(tui::BLUE);
+    // canv.DrawPoint(i, scale * sin((i / 2.0) / freq));
+    // canv.SetColor(tui::GREEN);
+    // canv.DrawPoint(i, -scale * sin((i / 2.0) / freq));
+    // canv.DrawLine(
+    // i, scale * sin((i / 2.0) / freq) * sin((10.0 * i / 2.0) / freq), i - 1,
+    // scale * sin(((i - 1) / 2.0) / freq) *
+    // sin((10.0 * (i - 1) / 2.0) / freq));
+    // canv.SetColor(tui::BLUE);
+    // canv.DrawLine(i, scale * sin((i / 2.0) / freq), i - 1,
+    // scale * sin(((i - 1) / 2.0) / freq));
+    // canv.SetColor(tui::GREEN);
+    // canv.DrawLine(i, -scale * sin((i / 2.0) / freq), i - 1,
+    // -scale * sin(((i - 1) / 2.0) / freq));
+    canv.DrawLine(i, 10 * tan(i / 25.0), i - 1, 10 * tan((i - 1) / 25.0));
+    // canv.DrawPoint(i, sqrt(pow(100, 2) - pow(i, 2)));
+    // canv.DrawLine(i, sqrt(pow(100, 2) - pow(i, 2)), i - 1,
+    // sqrt(pow(100, 2) - pow(i - 1, 2)));
+    // canv.DrawPoint(i, 50 * (sin(i / 10.0) - sin(i / 20.0)));
   }
   canv.Refresh();
   tui::Refresh();
-  tui::getch();
+  canv.Refresh();
+  tui::Refresh();
+  while (tui::getch() == tui::KEY_ERR) {
+  }
   tui::Cursor();
   tui::Echo();
   tui::NoRaw();
