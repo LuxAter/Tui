@@ -1,5 +1,6 @@
 #include "window/canvas.hpp"
 
+#include <math.h>
 #include <array>
 #include <bitset>
 #include <map>
@@ -8,7 +9,6 @@
 
 #include "window/window.hpp"
 
-#include <iomanip>
 #include <iostream>
 
 tui::Canvas::Canvas() { ResizeGrid(); }
@@ -97,6 +97,89 @@ void tui::Canvas::DrawLine(int ax, int ay, int bx, int by) {
   }
 }
 
+void tui::Canvas::DrawTriangle(int ax, int ay, int bx, int by, int cx, int cy) {
+  DrawLine(ax, ay, bx, by);
+  DrawLine(bx, by, cx, cy);
+  DrawLine(cx, cy, ax, ay);
+}
+
+void tui::Canvas::DrawRectangle(int ax, int ay, int bx, int by, int cx, int cy,
+                                int dx, int dy) {
+  DrawLine(ax, ay, bx, by);
+  DrawLine(bx, by, cx, cy);
+  DrawLine(cx, cy, dx, dy);
+  DrawLine(dx, dy, ax, ay);
+}
+
+void tui::Canvas::DrawCircle(int c_x, int c_y, int r) {
+  c_x += origin_[0];
+  c_y += origin_[1];
+  int x = r - 1;
+  int y = 0;
+  int err = (x * x) - (r * r) + r;
+  while (x >= y) {
+    SetPixel(c_x + x, c_y + y);
+    SetPixel(c_x + y, c_y + x);
+    SetPixel(c_x - y, c_y + x);
+    SetPixel(c_x - x, c_y + y);
+    SetPixel(c_x - x, c_y - y);
+    SetPixel(c_x - y, c_y - x);
+    SetPixel(c_x + y, c_y - x);
+    SetPixel(c_x + x, c_y - y);
+    if (err <= 0) {
+      y++;
+      err += 2 * y + 1;
+    } else {
+      x--;
+      err -= x * 2 + 1;
+    }
+  }
+}
+void tui::Canvas::DrawFilledCircle(int c_x, int c_y, int r) {
+  c_x += origin_[0];
+  c_y += origin_[1];
+  for (int y = -r; y < r; y++) {
+    for (int x = -r; x < r; x++) {
+      if (x * x + y * y < r * r) {
+        SetPixel(c_x + x, c_y + y);
+      }
+    }
+  }
+}
+
+void tui::Canvas::DrawRegularPolygon(int x, int y, int r, int n) {
+  std::vector<int> points;
+  double delta_theta = (3.1415 * 2) / static_cast<double>(n);
+  for (double theta = 1.5708; theta < 7.8539; theta += delta_theta) {
+    points.push_back(r * std::cos(theta) + x);
+    points.push_back(r * std::sin(theta) + y);
+  }
+  DrawPolygon(points);
+}
+
+void tui::Canvas::DrawPolygon(std::vector<int> x, std::vector<int> y) {
+  unsigned int count = std::min(x.size(), y.size());
+  for (unsigned int i = 0; i < count; i++) {
+    unsigned int j = (i + 1) % count;
+    DrawLine(x[i], y[i], x[j], y[j]);
+  }
+}
+
+void tui::Canvas::DrawPolygon(std::vector<int> points) {
+  for (unsigned int i = 0; i < points.size(); i += 2) {
+    unsigned int j = (i + 2) % points.size();
+    DrawLine(points[i], points[i + 1], points[j], points[j + 1]);
+  }
+}
+
+void tui::Canvas::ClearCanvas() {
+  for (unsigned i = 0; i < size_[0]; i++) {
+    for (unsigned j = 0; j < size_[1]; j++) {
+      pixel_data[i][j] = false;
+    }
+  }
+}
+
 void tui::Canvas::EnableBorder() {
   border_active_ = true;
   window_buffer_.border_ = true;
@@ -130,7 +213,7 @@ void tui::Canvas::ResizeGrid() {
   if (pixel_format_ == TWO_BLOCK) {
     x_char = 0.5;
     y_char = 1;
-  } else if (pixel_format_ == BLOCK) {
+  } else if (pixel_format_ == BLOCK || pixel_format_ == SQUARE) {
     x_char = 1;
     y_char = 1;
   } else if (pixel_format_ == VERTICAL_BLOCK) {
@@ -161,10 +244,21 @@ void tui::Canvas::ResizeGrid() {
   // Print("%ix%i\n", size_[0], size_[1]);
 }
 
+void tui::Canvas::SetPixel(unsigned int x, unsigned int y) {
+  if (x > 0 && x < size_[0] && y > 0 && y < size_[1]) {
+    pixel_data[x][y] = true;
+    DrawPixels(x, y);
+  }
+}
+
 void tui::Canvas::DrawPixels(unsigned int x, unsigned int y) {
+  // static unsigned int count = 0;
+  // count++;
+  // std::cout << "\n\n>>>>>" << count << "\n";
   unsigned int x_step = 1;
   unsigned int y_step = 1;
-  if (pixel_format_ == TWO_BLOCK || pixel_format_ == BLOCK) {
+  if (pixel_format_ == TWO_BLOCK || pixel_format_ == BLOCK ||
+      pixel_format_ == SQUARE) {
     x_step = 1;
     y_step = 1;
   } else if (pixel_format_ == VERTICAL_BLOCK) {
@@ -188,6 +282,8 @@ void tui::Canvas::DrawPixels(unsigned int x, unsigned int y) {
   }
   if (pixel_format_ == TWO_BLOCK) {
     DrawTwoBlock(x, y);
+  } else if (pixel_format_ == SQUARE) {
+    DrawSquare(x, y);
   } else if (pixel_format_ == BLOCK) {
     DrawBlock(x, y);
   } else if (pixel_format_ == VERTICAL_BLOCK) {
@@ -207,6 +303,11 @@ void tui::Canvas::DrawTwoBlock(unsigned int x, unsigned int y) {
             9608);
     mvPrint((x * 2) + 1 + border_active_,
             window_pos_[3] - y - 2 * border_active_, 9608);
+  }
+}
+void tui::Canvas::DrawSquare(unsigned int x, unsigned int y) {
+  if (pixel_data[x][y] == true) {
+    mvPrint(x + border_active_, window_pos_[3] - y - 2 * border_active_, 9632);
   }
 }
 void tui::Canvas::DrawBlock(unsigned int x, unsigned int y) {
@@ -234,7 +335,7 @@ void tui::Canvas::DrawHorizontalBlock(unsigned int x, unsigned int y) {
     ch = 9608;
   } else if (pixel_data[x][y] == true && pixel_data[x][y + 1] == false) {
     ch = 9604;
-  } else if (pixel_data[x][y] == false && pixel_data[x][y + 1] == true) {
+  } else if (pixel_data[x][y + 1] == true) {
     ch = 9600;
   }
   if (ch != 0) {

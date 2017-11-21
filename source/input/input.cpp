@@ -30,11 +30,8 @@ bool tui::kbhit(int timeout_ms) {
   static const int STDIN = 0;
   int bytesWaiting;
   if (timeout_ms < 0) {
-    bool wait = true;
-    while (wait == true) {
-      ioctl(STDIN, FIONREAD, &bytesWaiting);
-      wait = !bytesWaiting;
-    }
+    std::cin.get();
+    std::cin.unget();
     return true;
   } else {
     clock_t start = clock(),

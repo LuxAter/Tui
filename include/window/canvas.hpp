@@ -30,6 +30,7 @@ namespace tui {
 
   enum PixelFormat {
     TWO_BLOCK,
+    SQUARE,
     BLOCK,
     VERTICAL_BLOCK,
     HORIZONTAL_BLOCK,
@@ -50,6 +51,15 @@ namespace tui {
 
     void DrawPoint(int x, int y);
     void DrawLine(int ax, int ay, int bx, int by);
+    void DrawTriangle(int ax, int ay, int bx, int by, int cx, int cy);
+    void DrawRectangle(int ax, int ay, int bx, int by, int cx, int cy, int dx,
+                       int dy);
+    void DrawCircle(int x, int y, int r);
+    void DrawFilledCircle(int x, int y, int r);
+    void DrawRegularPolygon(int x, int y, int r, int n);
+    void DrawPolygon(std::vector<int> x, std::vector<int> y);
+    void DrawPolygon(std::vector<int> points);
+    void ClearCanvas();
 
     void EnableBorder();
     void DisableBorder();
@@ -61,9 +71,11 @@ namespace tui {
 
    private:
     void ResizeGrid();
+    void SetPixel(unsigned int x, unsigned int y);
     void DrawPixels(unsigned int x, unsigned int y);
 
     void DrawTwoBlock(unsigned int x, unsigned int y);
+    void DrawSquare(unsigned int x, unsigned int y);
     void DrawBlock(unsigned int x, unsigned int y);
     void DrawVerticalBlock(unsigned int x, unsigned int y);
     void DrawHorizontalBlock(unsigned int x, unsigned int y);
