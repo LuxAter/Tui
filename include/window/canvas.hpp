@@ -57,8 +57,11 @@ namespace tui {
     void DrawCircle(int x, int y, int r);
     void DrawFilledCircle(int x, int y, int r);
     void DrawRegularPolygon(int x, int y, int r, int n);
+    void DrawFilledRegularPolygon(int x, int y, int r, int n);
     void DrawPolygon(std::vector<int> x, std::vector<int> y);
     void DrawPolygon(std::vector<int> points);
+    void DrawFilledPolygon(std::vector<int> x, std::vector<int> y);
+    void DrawFilledPolygon(std::vector<int> points);
     void ClearCanvas();
 
     void EnableBorder();

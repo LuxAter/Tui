@@ -48,6 +48,17 @@ void tui::Canvas::DrawPoint(int x, int y) {
 }
 
 void tui::Canvas::DrawLine(int ax, int ay, int bx, int by) {
+  if (ax == bx && ay == by) {
+    ax += origin_[0];
+    ay += origin_[1];
+    bx += origin_[0];
+    by += origin_[1];
+    if (ax > 0 && ax < size_[0] && ay > 0 && ay < size_[1]) {
+      pixel_data[ax][ay] = true;
+      DrawPixels(ax, ay);
+    }
+    return;
+  }
   double m = static_cast<double>(by - ay) / static_cast<double>(bx - ax);
   bool vert = false;
   if (bx - ax == 0) {
@@ -74,7 +85,7 @@ void tui::Canvas::DrawLine(int ax, int ay, int bx, int by) {
       std::swap(ax, bx);
     }
     double x = ax;
-    for (double y = ay; y < by; y++) {
+    for (double y = ay; y <= by; y++) {
       x += (1.0 / m);
       if (x > 0 && x < size_[0] && y > 0 && y < size_[1]) {
         pixel_data[x][y] = true;
@@ -87,12 +98,12 @@ void tui::Canvas::DrawLine(int ax, int ay, int bx, int by) {
       std::swap(ay, by);
     }
     double y = ay;
-    for (double x = ax; x < bx; x++) {
-      y += m;
+    for (double x = ax; x <= bx; x++) {
       if (x > 0 && x < size_[0] && y > 0 && y < size_[1]) {
         pixel_data[x][y] = true;
         DrawPixels(x, y);
       }
+      y += m;
     }
   }
 }
@@ -150,11 +161,21 @@ void tui::Canvas::DrawFilledCircle(int c_x, int c_y, int r) {
 void tui::Canvas::DrawRegularPolygon(int x, int y, int r, int n) {
   std::vector<int> points;
   double delta_theta = (3.1415 * 2) / static_cast<double>(n);
-  for (double theta = 1.5708; theta < 7.8539; theta += delta_theta) {
+  for (double theta = 1.5708; theta < 7.85; theta += delta_theta) {
     points.push_back(r * std::cos(theta) + x);
     points.push_back(r * std::sin(theta) + y);
   }
   DrawPolygon(points);
+}
+
+void tui::Canvas::DrawFilledRegularPolygon(int x, int y, int r, int n) {
+  std::vector<int> points;
+  double delta_theta = (3.1415 * 2) / static_cast<double>(n);
+  for (double theta = 1.5708; theta < 7.85; theta += delta_theta) {
+    points.push_back(r * std::cos(theta) + x);
+    points.push_back(r * std::sin(theta) + y);
+  }
+  DrawFilledPolygon(points);
 }
 
 void tui::Canvas::DrawPolygon(std::vector<int> x, std::vector<int> y) {
@@ -169,6 +190,63 @@ void tui::Canvas::DrawPolygon(std::vector<int> points) {
   for (unsigned int i = 0; i < points.size(); i += 2) {
     unsigned int j = (i + 2) % points.size();
     DrawLine(points[i], points[i + 1], points[j], points[j + 1]);
+  }
+}
+
+void tui::Canvas::DrawFilledPolygon(std::vector<int> x, std::vector<int> y) {
+  int min_y = y[0];
+  int max_y = y[0];
+  for (unsigned int i = 1; i < y.size(); i++) {
+    min_y = std::min(min_y, y[i]);
+    max_y = std::max(max_y, y[i]);
+  }
+  for (int i = min_y; i <= max_y; i++) {
+    std::vector<int> inter;
+    for (unsigned int j = 0; j < x.size() && j < y.size(); j++) {
+      unsigned int k = (j + 1) % std::min(x.size(), y.size());
+      if (std::max(y[j], y[k]) > i && std::min(y[j], y[k]) <= i) {
+        if (x[j] == x[k]) {
+          inter.push_back(x[j]);
+        } else {
+          double m = static_cast<double>(y[k] - y[j]) / (x[k] - x[j]);
+          inter.push_back(static_cast<int>((i - y[j] + (m * x[j])) / m));
+        }
+      }
+    }
+    for (unsigned int a = 0; a < inter.size(); a += 2) {
+      unsigned int b = (a + 2) % inter.size();
+      DrawLine(inter[a], i, inter[b], i);
+    }
+  }
+}
+
+void tui::Canvas::DrawFilledPolygon(std::vector<int> points) {
+  int min_y = points[1];
+  int max_y = points[1];
+  for (unsigned int i = 0; i < points.size(); i += 2) {
+    max_y = std::max(max_y, points[i + 1]);
+    min_y = std::min(min_y, points[i + 1]);
+  }
+  for (int i = min_y; i <= max_y; i++) {
+    std::vector<int> inter;
+    for (unsigned int j = 0; j < points.size(); j += 2) {
+      unsigned int k = (j + 2) % points.size();
+      if ((std::max(points[j + 1], points[k + 1]) > i &&
+           std::min(points[j + 1], points[k + 1]) <= i)) {
+        if (points[j] == points[k]) {
+          inter.push_back(points[j]);
+        } else {
+          double m = static_cast<double>(points[k + 1] - points[j + 1]) /
+                     (points[k] - points[j]);
+          inter.push_back(
+              static_cast<int>((i - points[j + 1] + (m * points[j])) / m));
+        }
+      }
+    }
+    for (unsigned int a = 0; a < inter.size(); a += 2) {
+      unsigned int b = (a + 1) % inter.size();
+      DrawLine(inter[a], i, inter[b], i);
+    }
   }
 }
 
