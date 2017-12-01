@@ -48,7 +48,12 @@ namespace tui {
    * Enum that is used to define the different color access that the current
    * terminal supports.
    */
-  enum ColorSets { NO_COLOR = 0, COLOR_16 = 1, COLOR_256 = 2, TRUE_COLOR = 3 };
+  enum ColorSets {
+    NO_COLOR = 0,   //!< Terminal has no color abbility.
+    COLOR_16 = 1,   //!< Terminal can display the base 16 colors.
+    COLOR_256 = 2,  //!< Terminal can display 256 different colors.
+    TRUE_COLOR = 3  //!< Terminal has true color capability.
+  };
   /**
    * @brief Flags that can be passed durring initialization.
    *
@@ -59,12 +64,12 @@ namespace tui {
    * other functions.
    */
   enum InitFlags {
-    ECHO = 0,
-    NO_ECHO = 1,
-    RAW = 2,
-    NO_RAW = 3,
-    CURSOR = 4,
-    NO_CURSOR = 5
+    ECHO = 0,      //!< Enables echoing of user input.
+    NO_ECHO = 1,   //!< Disables echoing of user input.
+    RAW = 2,       //!< Enables raw key input.
+    NO_RAW = 3,    //!< Disables raw key input.
+    CURSOR = 4,    //!< Enables user cursor display.
+    NO_CURSOR = 5  //!< Disables user cursor display.
   };
 
   /**
@@ -87,6 +92,8 @@ namespace tui {
    * This function must be called before any other calls to other TUI functions.
    * It generates the standard screen, and determins the color access of the
    * terminal.
+   *
+   * @todo Enable optional init flags.
    *
    * @return `true` if it is successfuly initialized, and `false` otherwise.
    */
@@ -136,13 +143,73 @@ namespace tui {
    * @param ... Additional arguments.
    */
   void Print(std::string str, ...);
+  /**
+   * @brief Prints at given position wide string to `stdscr`.
+   * Move cursor to specified position and prints the supplied wide string, and
+   * additional arguments to `stdscr`.
+   * @param x X position to move the cursor to.
+   * @param y Y position to move the cursor to.
+   * @param str  Fmt string.
+   * @param ... Additional arguments.
+   */
   void mvPrint(unsigned x, unsigned y, std::wstring str, ...);
+  /**
+   * @brief Prints at given position string to `stdscr`.
+   * Move cursor to specified position and prints the supplied string, and
+   * additional arguments to `stdscr`.
+   * @param x X position to move the cursor to.
+   * @param y Y position to move the cursor to.
+   * @param str  Fmt string.
+   * @param ... Additional arguments.
+   */
   void mvPrint(unsigned x, unsigned y, std::string str, ...);
 
+  /**
+   * @brief Converts string to wide string.
+   *
+   * Taks a provided string and converts to the associated wide string
+   * alternative.
+   *
+   * @todo Add ability to intelegently read unicode representations in normal
+   * string to wide string alternatives.
+   *
+   * @param str String to convert.
+   *
+   * @return Wide string containg data converted from `str`.
+   */
   std::wstring GetWString(std::string str);
 
+  /**
+   * @brief Generates window.
+   *
+   * Generates a window with the same dimensions as `stdscr`.
+   *
+   * @return Window object.
+   */
   tui::Window CreateWindow();
+  /**
+   * @brief Generates window.
+   *
+   * Generates a window at (0,0) with the provided dimensions.
+   *
+   * @param w Width of generated window.
+   * @param h Height of generated window.
+   *
+   * @return Window object.
+   */
   tui::Window CreateWindow(int w, int h);
+  /**
+   * @brief Generates window.
+   *
+   * Generates a window at provided position with provided dimensions.
+   *
+   * @param x Position of window.
+   * @param y Position of window.
+   * @param w Width of window.
+   * @param h Height of window.
+   *
+   * @return Window object.
+   */
   tui::Window CreateWindow(int x, int y, int w, int h);
 
 }  // namespace tui
