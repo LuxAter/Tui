@@ -29,6 +29,10 @@ void tui::Window::Show() { window_buffer_.Refresh(); }
 
 void tui::Window::Refresh() { Show(); }
 
+void tui::Window::Resize(int w, int h) {}
+
+void tui::Window::Position(int w, int h) {}
+
 void tui::Window::Clear() { window_buffer_.Clear(); }
 
 void tui::Window::Print(std::wstring str, ...) {
@@ -99,7 +103,7 @@ void tui::Window::mvPrint(unsigned int x, unsigned int y, unsigned int ch) {
                        active_background_color_);
 }
 
-void tui::Window::Move(unsigned x, unsigned y) {
+void tui::Window::MoveCursor(unsigned x, unsigned y) {
   cursor[0] = x;
   cursor[1] = y;
 }

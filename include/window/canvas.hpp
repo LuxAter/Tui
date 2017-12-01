@@ -52,8 +52,11 @@ namespace tui {
     void DrawPoint(int x, int y);
     void DrawLine(int ax, int ay, int bx, int by);
     void DrawTriangle(int ax, int ay, int bx, int by, int cx, int cy);
+    void DrawFilledTriangle(int ax, int ay, int bx, int by, int cx, int cy);
     void DrawRectangle(int ax, int ay, int bx, int by, int cx, int cy, int dx,
                        int dy);
+    void DrawFilledRectangle(int ax, int ay, int bx, int by, int cx, int cy,
+                             int dx, int dy);
     void DrawCircle(int x, int y, int r);
     void DrawFilledCircle(int x, int y, int r);
     void DrawRegularPolygon(int x, int y, int r, int n);

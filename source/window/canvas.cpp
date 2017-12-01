@@ -114,12 +114,22 @@ void tui::Canvas::DrawTriangle(int ax, int ay, int bx, int by, int cx, int cy) {
   DrawLine(cx, cy, ax, ay);
 }
 
+void tui::Canvas::DrawFilledTriangle(int ax, int ay, int bx, int by, int cx,
+                                     int cy) {
+  DrawFilledPolygon({ax, ay, bx, by, cx, cy});
+}
+
 void tui::Canvas::DrawRectangle(int ax, int ay, int bx, int by, int cx, int cy,
                                 int dx, int dy) {
   DrawLine(ax, ay, bx, by);
   DrawLine(bx, by, cx, cy);
   DrawLine(cx, cy, dx, dy);
   DrawLine(dx, dy, ax, ay);
+}
+
+void tui::Canvas::DrawFilledRectangle(int ax, int ay, int bx, int by, int cx,
+                                      int cy, int dx, int dy) {
+  DrawFilledPolygon({ax, ay, bx, by, cx, cy, dx, dy});
 }
 
 void tui::Canvas::DrawCircle(int c_x, int c_y, int r) {

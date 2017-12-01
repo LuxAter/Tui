@@ -5,3 +5,6 @@
 build/*
 tui
 unit-test
+docs/xml
+docs/html
+docs/latex

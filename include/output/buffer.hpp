@@ -22,9 +22,13 @@ namespace tui {
     };
     Buffer();
     Buffer(unsigned int w, unsigned int h);
+
     void Clear();
     void Swap();
     void Refresh();
+
+    // TODO(2017-11-27, Arden): Write Resize function chain
+    void Resize(unsigned int w, unsigned int h);
 
     void SetDisplayBuffer(bool setting);
     void OffSet(unsigned int x, unsigned int y);

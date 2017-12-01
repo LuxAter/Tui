@@ -22,6 +22,10 @@ namespace tui {
     void Show();
     void Refresh();
 
+    void Resize(int w, int h);
+    // TODO(2017-11-27, Arden): Write position function chain
+    void Position(int w, int h);
+
     void Clear();
 
     void Print(std::wstring str, ...);
@@ -35,7 +39,7 @@ namespace tui {
     void Print(unsigned int ch);
     void mvPrint(unsigned int x, unsigned int y, unsigned int ch);
 
-    void Move(unsigned x, unsigned y);
+    void MoveCursor(unsigned x, unsigned y);
 
     void Fill(unsigned int ch);
     void Line(unsigned x0, unsigned y0, unsigned x1, unsigned y1,
