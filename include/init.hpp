@@ -116,37 +116,37 @@ namespace tui {
   int HasColor();
 
   /**
-   * @brief Clears `stdscr`.
+   * @brief Clears stdscr.
    */
   void Clear();
 
   /**
-   * @brief Refreshes `stdscr`.
+   * @brief Refreshes stdscr.
    */
   void Refresh();
 
   /**
-   * @brief Print wide string to `stdscr`.
+   * @brief Print wide string to stdscr.
    *
-   * Print wide string to `stdscr` such as printf.
+   * Print wide string to stdscr such as printf.
    *
    * @param str Fmt string.
    * @param ... Additional arguments.
    */
   void Print(std::wstring str, ...);
   /**
-   * @brief Print string to `stdscr`.
+   * @brief Print string to stdscr.
    *
-   * Print string to `stdscr` such as printf.
+   * Print string to stdscr such as printf.
    *
    * @param str Fmt string.
    * @param ... Additional arguments.
    */
   void Print(std::string str, ...);
   /**
-   * @brief Prints at given position wide string to `stdscr`.
+   * @brief Prints at given position wide string to stdscr.
    * Move cursor to specified position and prints the supplied wide string, and
-   * additional arguments to `stdscr`.
+   * additional arguments to stdscr.
    * @param x X position to move the cursor to.
    * @param y Y position to move the cursor to.
    * @param str  Fmt string.
@@ -154,9 +154,9 @@ namespace tui {
    */
   void mvPrint(unsigned x, unsigned y, std::wstring str, ...);
   /**
-   * @brief Prints at given position string to `stdscr`.
+   * @brief Prints at given position string to stdscr.
    * Move cursor to specified position and prints the supplied string, and
-   * additional arguments to `stdscr`.
+   * additional arguments to stdscr.
    * @param x X position to move the cursor to.
    * @param y Y position to move the cursor to.
    * @param str  Fmt string.
@@ -182,7 +182,7 @@ namespace tui {
   /**
    * @brief Generates window.
    *
-   * Generates a window with the same dimensions as `stdscr`.
+   * Generates a window with the same dimensions as stdscr.
    *
    * @return Window object.
    */

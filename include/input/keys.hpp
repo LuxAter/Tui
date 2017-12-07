@@ -1,9 +1,38 @@
+/* Copyright (C) 
+ * 2017 - Arden Rasmussen
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * 
+ */
+/**
+ * @file keys.hpp
+ * @brief Key codes.
+ * @author Arden Rasmussen
+ * @version 1.0
+ * @date 2017-12-01
+ */
 #ifndef TUI_INPUT_KEYS_HPP
 #define TUI_INPUT_KEYS_HPP
 
 namespace tui {
+  /**
+   * @brief Key codes
+   * 
+   * This enum contains representations of all key values that TUI can accept.
+   */
   enum KeyCodes {
-    KEY_ERR = 0,
+    KEY_ERR = 0, //!< Invalid Key/No Key
     KEY_ENTER = 10,
     KEY_ESCAPE = 27,
     KEY_SPACE = 32,

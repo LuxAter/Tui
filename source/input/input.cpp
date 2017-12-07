@@ -50,6 +50,10 @@ bool tui::kbhit(int timeout_ms) {
   }
 }
 
+unsigned int tui::GetKeyCode(char key){
+  return static_cast<unsigned int>(key);
+}
+
 unsigned int tui::GetEscapeKey(char key) {
   unsigned int key_code = 0;
   switch (key) {

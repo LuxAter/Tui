@@ -20,6 +20,7 @@ int main(int argc, const char* argv[]) {
   // tui::SetTimeout(100);
   // canv.SetPixel(tui::TWO_BLOCK);
   canv.SetPixel(tui::HORIZONTAL_BLOCK);
+  tui::GetKeyCode('a');
   // canv.SetPixel(tui::SQUARE);
   canv.SetOrigin(0.5, 0.5);
   canv.SetColor(255, 17, 129);

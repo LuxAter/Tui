@@ -6,11 +6,6 @@
 
 #include "init.hpp"
 
-namespace tui {
-  std::vector<std::string> _active_attrs;
-  std::string _active_color = "", _active_background_color = "";
-}  // namespace tui
-
 tui::ColorValue::ColorValue() {}
 tui::ColorValue::ColorValue(Color color) : id(1), id_enum(color) {}
 tui::ColorValue::ColorValue(unsigned char color) : id(2), id_ch(color) {}

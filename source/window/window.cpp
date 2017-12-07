@@ -31,7 +31,7 @@ void tui::Window::Refresh() { Show(); }
 
 void tui::Window::Resize(int w, int h) {}
 
-void tui::Window::Position(int w, int h) {}
+void tui::Window::Position(int x, int y) {}
 
 void tui::Window::Clear() { window_buffer_.Clear(); }
 
