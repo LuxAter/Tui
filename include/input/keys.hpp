@@ -137,6 +137,18 @@ namespace tui {
     KEY_RIGHT = 130,
     KEY_LEFT = 131,
     KEY_DELETE = 132,
+    KEY_F1 = 133,
+    KEY_F2 = 134,
+    KEY_F3 = 135,
+    KEY_F4 = 136,
+    KEY_F5 = 137,
+    KEY_F6 = 138,
+    KEY_F7 = 139,
+    KEY_F8 = 140,
+    KEY_F9 = 141,
+    KEY_F10 = 142,
+    KEY_F11 = 143,
+    KEY_F12 = 144
   };
 }  // namespace tui
 

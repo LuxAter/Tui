@@ -191,9 +191,6 @@ void tui::Buffer::FillLine(unsigned int a_x, unsigned int a_y, unsigned int b_x,
       }
     }
   } else {
-    std::cout << "(" << a_x << "," << a_y << "), (" << b_x << "," << b_y
-              << ") : (" << write_buffer.size() << "," << write_buffer[0].size()
-              << ")\n";
     // std::cout << "INVALID POINT!!\n";
   }
 }
