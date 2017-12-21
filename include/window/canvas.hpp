@@ -16,6 +16,9 @@
  *
  */
 
+// TODO(2017-12-14, Arden): Add erase point, line, rect, triangle commands.
+// TODO(2017-12-14, Arden): Clear canvas when points are cleared.
+
 /**
  * @file canvas.hpp
  * @brief Canvas drawing

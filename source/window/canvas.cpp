@@ -263,7 +263,10 @@ void tui::Canvas::DrawFilledPolygon(std::vector<int> points) {
 void tui::Canvas::ClearCanvas() {
   for (unsigned i = 0; i < size_[0]; i++) {
     for (unsigned j = 0; j < size_[1]; j++) {
-      pixel_data[i][j] = false;
+      if (pixel_data[i][j] != false) {
+        pixel_data[i][j] = false;
+        DrawPixels(i, j);
+      }
     }
   }
 }
