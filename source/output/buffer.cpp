@@ -1,6 +1,8 @@
 #include "output/buffer.hpp"
 
 #include <stdio.h>
+#include <cmath>
+#include <map>
 
 #include <iostream>
 
@@ -82,7 +84,47 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, std::wstring str,
     head[0] = border_;
   }
   for (unsigned int i = 0; i < str.size(); i++) {
-    if (str[i] == '\n') {
+    if (int(str[i]) >= -32 && int(str[i]) <= -17) {
+      unsigned val = 0;
+      std::map<int, int> bitmap{
+          {-32, 0},     {-31, 4096},  {-30, 8192},  {-29, 12288},
+          {-28, 16384}, {-27, 20480}, {-26, 24576}, {-25, 28672},
+          {-24, 32768}, {-23, 36864}, {-22, 40960}, {-21, 45056},
+          {-20, 49152}, {-19, 53248}, {-18, 57344}, {-17, 61440}};
+      val = bitmap[int(str[i])];
+      double b = 0, c = 0;
+      int off = -1 * (((-1 * int(str[i + 1])) % 4) - 4);
+      if (off != 0) {
+        b = -256.0 * (std::round(((-1 * double(str[i + 1])) + 2.0) / 4.0) - 32);
+      } else {
+        b = -256.0 * ((-1.0 * (double(str[i + 1]) / 4.0)) - 32.0);
+      }
+      c = (-1.0 * ((-1.0 * double(str[i + 2])) - 128.0)) + (off * 64.0);
+      val += b + c;
+      write_buffer[head[0]][head[1]] = val;
+      write_buffer[head[0]][head[1]].attrs = attrs;
+      write_buffer[head[0]][head[1]].attrs.push_back(color);
+      write_buffer[head[0]][head[1]].attrs.push_back(background_color);
+      head[0]++;
+      i += 2;
+    } else if (int(str[i]) >= -60 && int(str[i]) <= -32) {
+      unsigned val = 0;
+      double b = 0, c = 0;
+      int off = -1 * (((-1 * int(str[i])) % 4) - 4);
+      if (off != 0) {
+        b = -256.0 * (std::round(((-1 * double(str[i])) + 2.0) / 4.0) - 16.0);
+      } else {
+        b = -256.0 * ((-1.0 * (double(str[i]) / 4.0)) - 16.0);
+      }
+      c = (-1.0 * ((-1.0 * double(str[i + 1])) - 128.0)) + (off * 64.0);
+      val += b + c;
+      write_buffer[head[0]][head[1]] = val;
+      write_buffer[head[0]][head[1]].attrs = attrs;
+      write_buffer[head[0]][head[1]].attrs.push_back(color);
+      write_buffer[head[0]][head[1]].attrs.push_back(background_color);
+      head[0]++;
+      i += 2;
+    } else if (str[i] == '\n') {
       head[1]++;
       head[0] = border_;
     } else {
