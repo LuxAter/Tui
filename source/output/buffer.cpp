@@ -42,20 +42,32 @@ void tui::Buffer::Clear() {
 
 void tui::Buffer::Swap() {
   Char null;
-  for (unsigned int i = 0; i < size[0]; i++) {
-    for (unsigned int j = 0; j < size[1]; j++) {
-      if ((write_buffer[i][j] != null &&
-           display_buffer[i][j] != write_buffer[i][j]) ||
-          (sub_buffer[i][j] != null &&
-           display_buffer[i][j] != sub_buffer[i][j])) {
-        if (sub_buffer[i][j] != null) {
-          display_buffer[i][j] = sub_buffer[i][j];
-        } else {
-          display_buffer[i][j] = write_buffer[i][j];
+  if (fast_mode == false) {
+    for (unsigned int i = 0; i < size[0]; i++) {
+      for (unsigned int j = 0; j < size[1]; j++) {
+        if ((write_buffer[i][j] != null &&
+             display_buffer[i][j] != write_buffer[i][j]) ||
+            (sub_buffer[i][j] != null &&
+             display_buffer[i][j] != sub_buffer[i][j])) {
+          if (sub_buffer[i][j] != null) {
+            display_buffer[i][j] = sub_buffer[i][j];
+          } else {
+            display_buffer[i][j] = write_buffer[i][j];
+          }
+          WriteChar(display_buffer[i][j], i, j);
         }
-        WriteChar(display_buffer[i][j], i, j);
       }
     }
+  } else if (fast_mode == true) {
+    for (auto& it : updated_data_) {
+      if (sub_buffer[it[0]][it[1]] != null) {
+        display_buffer[it[0]][it[1]] = sub_buffer[it[0]][it[1]];
+      } else {
+        display_buffer[it[0]][it[1]] = write_buffer[it[0]][it[1]];
+      }
+      WriteChar(display_buffer[it[0]][it[1]], it[0], it[1]);
+    }
+    updated_data_.clear();
   }
   if (display_ == true) {
     fflush(stdout);
@@ -65,6 +77,8 @@ void tui::Buffer::Swap() {
 void tui::Buffer::Refresh() { Swap(); }
 
 void tui::Buffer::SetDisplayBuffer(bool setting) { display_ = setting; }
+
+void tui::Buffer::SetFastMode(bool setting) {fast_mode = setting;}
 
 void tui::Buffer::OffSet(unsigned int x, unsigned int y) { offset = {{x, y}}; }
 
@@ -105,6 +119,7 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, std::wstring str,
       write_buffer[head[0]][head[1]].attrs = attrs;
       write_buffer[head[0]][head[1]].attrs.push_back(color);
       write_buffer[head[0]][head[1]].attrs.push_back(background_color);
+      StorePosition(head[0], head[1]);
       head[0]++;
       i += 2;
     } else if (int(str[i]) >= -60 && int(str[i]) <= -32) {
@@ -122,6 +137,7 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, std::wstring str,
       write_buffer[head[0]][head[1]].attrs = attrs;
       write_buffer[head[0]][head[1]].attrs.push_back(color);
       write_buffer[head[0]][head[1]].attrs.push_back(background_color);
+      StorePosition(head[0], head[1]);
       head[0]++;
       i += 2;
     } else if (str[i] == '\n') {
@@ -132,6 +148,7 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, std::wstring str,
       write_buffer[head[0]][head[1]].attrs = attrs;
       write_buffer[head[0]][head[1]].attrs.push_back(color);
       write_buffer[head[0]][head[1]].attrs.push_back(background_color);
+      StorePosition(head[0], head[1]);
       head[0]++;
     }
     if (head[0] >= write_buffer.size() - border_) {
@@ -165,6 +182,7 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, unsigned int ch,
   write_buffer[head[0]][head[1]].attrs = attrs;
   write_buffer[head[0]][head[1]].attrs.push_back(color);
   write_buffer[head[0]][head[1]].attrs.push_back(background_color);
+  StorePosition(head[0], head[1]);
   head[0]++;
   if (head[0] >= write_buffer.size() - border_) {
     head[0] = border_;
@@ -181,12 +199,14 @@ void tui::Buffer::Write(unsigned int& x, unsigned int& y, unsigned int ch,
 void tui::Buffer::Write(unsigned int x, unsigned int y, Char ch) {
   if (x < write_buffer.size() && y < write_buffer[x].size()) {
     write_buffer[x][y] = ch;
+    StorePosition(x, y);
   }
 }
 
 void tui::Buffer::WriteSub(unsigned int x, unsigned int y, Char ch) {
   if (x < sub_buffer.size() && y < sub_buffer[x].size()) {
     sub_buffer[x][y] = ch;
+    StorePosition(x, y);
   }
 }
 
@@ -194,6 +214,7 @@ void tui::Buffer::Fill(Char ch) {
   for (unsigned int i = 0; i < size[0]; i++) {
     for (unsigned int j = 0; j < size[1]; j++) {
       write_buffer[i][j] = ch;
+      StorePosition(i, j);
     }
   }
 }
@@ -209,6 +230,7 @@ void tui::Buffer::FillLine(unsigned int a_x, unsigned int a_y, unsigned int b_x,
       b_y = tmp_max;
       for (unsigned int i = a_y; i <= b_y; i++) {
         write_buffer[a_x][i] = ch;
+        StorePosition(a_x, i);
       }
     } else {
       if (b_x < a_x) {
@@ -232,8 +254,6 @@ void tui::Buffer::FillLine(unsigned int a_x, unsigned int a_y, unsigned int b_x,
         t++;
       }
     }
-  } else {
-    // std::cout << "INVALID POINT!!\n";
   }
 }
 
@@ -262,8 +282,10 @@ void tui::Buffer::RollBuffer() {
     for (unsigned int j = 1 + border_; j < write_buffer[i].size() - border_;
          j++) {
       write_buffer[i][j - 1] = write_buffer[i][j];
+      StorePosition(i, j - 1);
       if (j == write_buffer[i].size() - 1 - border_) {
         write_buffer[i][j] = Char(' ');
+        StorePosition(i, j);
       }
     }
   }
@@ -288,4 +310,14 @@ std::string tui::Buffer::GetChar(unsigned int ch) {
     out.append(1, static_cast<char>(0x80 | (ch & 0x3f)));
   }
   return out;
+}
+
+void tui::Buffer::StorePosition(unsigned x, unsigned y) {
+  if (fast_mode == true) {
+    std::set<std::array<unsigned, 2>>::const_iterator it =
+        updated_data_.find(std::array<unsigned, 2>{{x, y}});
+    if (it == updated_data_.end()) {
+      updated_data_.insert(std::array<unsigned, 2>{{x, y}});
+    }
+  }
 }
