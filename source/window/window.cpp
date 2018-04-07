@@ -2,6 +2,8 @@
 
 #include <stdarg.h>
 #include <wchar.h>
+
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -29,9 +31,33 @@ void tui::Window::Show() { window_buffer_.Refresh(); }
 
 void tui::Window::Refresh() { Show(); }
 
-void tui::Window::Resize(int w, int h) {}
+void tui::Window::Resize(int w, int h) {
+  if (w <= 0 || h <= 0) {
+    return;
+  }
+  window_buffer_.Resize(w, h);
+  window_pos_[2] = w;
+  window_pos_[3] = h;
+  if (std::any_of(box_chars_.begin(), box_chars_.end(),
+                  [](unsigned i) { return i != 0; })) {
+    Box(box_chars_[0], box_chars_[1], box_chars_[2], box_chars_[3],
+        box_chars_[4], box_chars_[5], box_chars_[6], box_chars_[7]);
+  }
+}
 
-void tui::Window::Position(int x, int y) {}
+void tui::Window::Position(int x, int y) {
+  if (x <= 0 || y <= 0) {
+    return;
+  }
+  window_buffer_.OffSet(x, y);
+  window_pos_[0] = x;
+  window_pos_[1] = y;
+  if (std::any_of(box_chars_.begin(), box_chars_.end(),
+                  [](unsigned i) { return i != 0; })) {
+    Box(box_chars_[0], box_chars_[1], box_chars_[2], box_chars_[3],
+        box_chars_[4], box_chars_[5], box_chars_[6], box_chars_[7]);
+  }
+}
 
 void tui::Window::Clear() { window_buffer_.Clear(); }
 
@@ -132,6 +158,7 @@ void tui::Window::Box(unsigned c, unsigned v, unsigned h) {
 void tui::Window::Box(unsigned int ul, unsigned int u, unsigned int ur,
                       unsigned int l, unsigned int r, unsigned int bl,
                       unsigned int b, unsigned int br) {
+  box_chars_ = {{ul, u, ur, l, r, bl, b, br}};
   Buffer::Char c;
   c.attrs = active_attrs_;
   c.attrs.push_back(active_color_);
@@ -155,6 +182,8 @@ void tui::Window::Box(unsigned int ul, unsigned int u, unsigned int ur,
   window_buffer_.FillLine(1, window_pos_[3] - 1, window_pos_[2] - 2,
                           window_pos_[3] - 1, c);
 }
+
+void tui::Window::EraseBox() { Box(0, 0, 0, 0, 0, 0, 0, 0); }
 
 void tui::Window::EnableBorder() {
   border_active_ = true;
@@ -296,6 +325,23 @@ void tui::Window::SetBackground(unsigned char r, unsigned char g,
     std::cerr << "Current terminal does not support true colors\n";
   }
 }
+
+unsigned int tui::Window::GetWidth() {
+  return window_pos_[2];
+}
+
+unsigned int tui::Window::GetHeight() {
+  return window_pos_[3];
+}
+unsigned int tui::Window::GetX() {
+  return window_pos_[0];
+}
+
+unsigned int tui::Window::GetY() {
+  return window_pos_[1];
+}
+
+bool tui::Window::GetBorderEnabled() { return border_active_; }
 
 tui::Buffer* tui::Window::GetBufferPointer() { return &window_buffer_; }
 

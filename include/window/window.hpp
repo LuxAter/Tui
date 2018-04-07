@@ -249,6 +249,7 @@ namespace tui {
      */
     void Box(unsigned int ul, unsigned int u, unsigned int ur, unsigned int l,
              unsigned int r, unsigned int bl, unsigned int b, unsigned int br);
+    void EraseBox();
     /**
      * @brief Enables buffer border protection.
      * 
@@ -361,6 +362,12 @@ namespace tui {
      */
     void SetBackground(unsigned char r, unsigned char g, unsigned char b);
 
+    unsigned int GetWidth();
+    unsigned int GetHeight();
+    unsigned int GetX();
+    unsigned int GetY();
+    bool GetBorderEnabled();
+
     /**
      * @brief Gets pointer to windows internal buffer.
      *
@@ -467,6 +474,7 @@ namespace tui {
      * @brief Active background color escape code.
      */
     std::string active_background_color_;
+    std::array<unsigned, 8> box_chars_ = {{0, 0, 0, 0, 0, 0, 0, 0}};
   };
 }  // namespace tui
 

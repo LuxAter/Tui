@@ -38,6 +38,14 @@ void tui::Buffer::Clear() {
   write_buffer = std::vector<std::vector<Char>>(
       size[0], std::vector<Char>(size[1], Char()));
   sub_buffer = write_buffer;
+  if (fast_mode == true) {
+    updated_data_.clear();
+    for (unsigned i = 0; i < size[0]; i++) {
+      for (unsigned j = 0; j < size[1]; j++) {
+        updated_data_.insert(std::array<unsigned, 2>{{i, j}});
+      }
+    }
+  }
 }
 
 void tui::Buffer::Swap() {
@@ -76,11 +84,44 @@ void tui::Buffer::Swap() {
 
 void tui::Buffer::Refresh() { Swap(); }
 
+void tui::Buffer::Resize(unsigned int w, unsigned int h) {
+  Clear();
+  Swap();
+  size[0] = w;
+  size[1] = h;
+  display_buffer =
+      std::vector<std::vector<Char>>(w, std::vector<Char>(h, Char()));
+  write_buffer = display_buffer;
+  sub_buffer = display_buffer;
+  if (fast_mode == true) {
+    updated_data_.clear();
+    for (unsigned i = 0; i < size[0]; i++) {
+      for (unsigned j = 0; j < size[1]; j++) {
+        updated_data_.insert(std::array<unsigned, 2>{{i, j}});
+      }
+    }
+  }
+}
+
 void tui::Buffer::SetDisplayBuffer(bool setting) { display_ = setting; }
 
-void tui::Buffer::SetFastMode(bool setting) {fast_mode = setting;}
+void tui::Buffer::SetFastMode(bool setting) { fast_mode = setting; }
 
-void tui::Buffer::OffSet(unsigned int x, unsigned int y) { offset = {{x, y}}; }
+void tui::Buffer::OffSet(unsigned int x, unsigned int y) {
+  std::vector<std::vector<Char>> tmp_buffer = write_buffer;
+  Clear();
+  Swap();
+  offset = {{x, y}};
+  write_buffer = tmp_buffer;
+  if (fast_mode == true) {
+    updated_data_.clear();
+    for (unsigned i = 0; i < size[0]; i++) {
+      for (unsigned j = 0; j < size[1]; j++) {
+        updated_data_.insert(std::array<unsigned, 2>{{i, j}});
+      }
+    }
+  }
+}
 
 void tui::Buffer::SetTarget(tui::Buffer* _target) { target = _target; }
 
@@ -256,6 +297,8 @@ void tui::Buffer::FillLine(unsigned int a_x, unsigned int a_y, unsigned int b_x,
     }
   }
 }
+
+std::array<unsigned, 2> tui::Buffer::GetBufferSize() { return size; }
 
 void tui::Buffer::WriteChar(Char ch, int x, int y) {
   if (display_ == true) {

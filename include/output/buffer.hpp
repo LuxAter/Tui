@@ -285,6 +285,7 @@ class Buffer {
   void FillLine(unsigned int a_x, unsigned int a_y, unsigned int b_x,
                 unsigned int b_y, Char ch);
 
+  std::array<unsigned, 2> GetBufferSize();
   /**
    * @brief Flag if a border exists.
    *
