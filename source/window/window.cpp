@@ -46,7 +46,7 @@ void tui::Window::Resize(int w, int h) {
 }
 
 void tui::Window::Position(int x, int y) {
-  if (x <= 0 || y <= 0) {
+  if (x < 0 || y < 0) {
     return;
   }
   window_buffer_.OffSet(x, y);

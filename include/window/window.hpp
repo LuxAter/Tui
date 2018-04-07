@@ -249,6 +249,11 @@ namespace tui {
      */
     void Box(unsigned int ul, unsigned int u, unsigned int ur, unsigned int l,
              unsigned int r, unsigned int bl, unsigned int b, unsigned int br);
+    /**
+     * @brief Erases any currently drawn box.
+     *
+     * Erases current box, by drawing a new one with only null characters.
+     */
     void EraseBox();
     /**
      * @brief Enables buffer border protection.
@@ -362,10 +367,35 @@ namespace tui {
      */
     void SetBackground(unsigned char r, unsigned char g, unsigned char b);
 
+    /**
+     * @brief Get Width of window
+     *
+     * @return Width of the window.
+     */
     unsigned int GetWidth();
+    /**
+     * @brief Get Height of window.
+     *
+     * @return Height of the window.
+     */
     unsigned int GetHeight();
+    /**
+     * @brief Get X position of the window.
+     *
+     * @return X position of the window
+     */
     unsigned int GetX();
+    /**
+     * @brief Get Y position of the window.
+     *
+     * @return Y position of the window
+     */
     unsigned int GetY();
+    /**
+     * @brief Checks if border is currently enabled.
+     *
+     * @return `true` if border is enabled, `false` otherwise.
+     */
     bool GetBorderEnabled();
 
     /**
@@ -474,6 +504,9 @@ namespace tui {
      * @brief Active background color escape code.
      */
     std::string active_background_color_;
+    /**
+     * @brief Set of characters last used to draw a box.
+     */
     std::array<unsigned, 8> box_chars_ = {{0, 0, 0, 0, 0, 0, 0, 0}};
   };
 }  // namespace tui

@@ -147,7 +147,6 @@ class Buffer {
    */
   void Refresh();
 
-  // TODO(2017-11-27, Arden): Write Resize function chain
   /**
    * @brief Resizes the buffers.
    *
@@ -285,7 +284,13 @@ class Buffer {
   void FillLine(unsigned int a_x, unsigned int a_y, unsigned int b_x,
                 unsigned int b_y, Char ch);
 
+  /**
+   * @brief Returns the size of the buffer.
+   *
+   * @return Array of [Width, Height].
+   */
   std::array<unsigned, 2> GetBufferSize();
+
   /**
    * @brief Flag if a border exists.
    *

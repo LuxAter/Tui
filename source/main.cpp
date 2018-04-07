@@ -19,7 +19,7 @@ int main(int argc, const char* argv[]) {
   // tui::Refresh();
   // tui::GetCh();
   // tui::EnabledMouse(tui::MOUSE_MOVEMENT);
-  tui::Window win = tui::stdscr.CreateWindow(10, 10, 15, 15);
+  tui::Window win = tui::stdscr.CreateWindow();
   win.Box();
   // win.EnableBorder();
   win.Refresh();
