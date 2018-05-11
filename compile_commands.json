@@ -1,0 +1,159 @@
+[
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/tui/include", 
+            "-std=c++11", 
+            "-w", 
+            "-fprofile-arcs", 
+            "-ftest-coverage", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/source/./terminal/terminal.o", 
+            "terminal/terminal.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/source", 
+        "file": "terminal/terminal.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/tui/include", 
+            "-std=c++11", 
+            "-w", 
+            "-fprofile-arcs", 
+            "-ftest-coverage", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/source/./terminal/cursor.o", 
+            "terminal/cursor.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/source", 
+        "file": "terminal/cursor.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/tui/include", 
+            "-std=c++11", 
+            "-w", 
+            "-fprofile-arcs", 
+            "-ftest-coverage", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/source/./window/print.o", 
+            "window/print.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/source", 
+        "file": "window/print.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/tui/include", 
+            "-I/home/arden/Programming/cpp/tui/external/googletest/googletest/include", 
+            "-std=c++11", 
+            "-w", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/test/./tmp.o", 
+            "tmp.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/test", 
+        "file": "tmp.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/tui/include", 
+            "-std=c++11", 
+            "-w", 
+            "-fprofile-arcs", 
+            "-ftest-coverage", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/source/./init.o", 
+            "init.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/source", 
+        "file": "init.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-isystem", 
+            "/home/arden/Programming/cpp/tui/external/googletest/googletest/include", 
+            "-I/home/arden/Programming/cpp/tui/external/googletest/googletest", 
+            "-pthread", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/gtest/gtest-all.o", 
+            "googletest/googletest/src/gtest-all.cc"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/external", 
+        "file": "googletest/googletest/src/gtest-all.cc"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-isystem", 
+            "/home/arden/Programming/cpp/tui/external/googletest/googletest/include", 
+            "-I/home/arden/Programming/cpp/tui/external/googletest/googletest", 
+            "-pthread", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/gtest/gtests_main.o", 
+            "googletest/googletest/src/gtest_main.cc"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/external", 
+        "file": "googletest/googletest/src/gtest_main.cc"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/tui/include", 
+            "-std=c++11", 
+            "-w", 
+            "-fprofile-arcs", 
+            "-ftest-coverage", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/source/./input/input.o", 
+            "input/input.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/source", 
+        "file": "input/input.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/tui/include", 
+            "-std=c++11", 
+            "-w", 
+            "-fprofile-arcs", 
+            "-ftest-coverage", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/source/./window/window.o", 
+            "window/window.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/source", 
+        "file": "window/window.cpp"
+    }, 
+    {
+        "arguments": [
+            "c++", 
+            "-c", 
+            "-I/home/arden/Programming/cpp/tui/include", 
+            "-std=c++11", 
+            "-w", 
+            "-fprofile-arcs", 
+            "-ftest-coverage", 
+            "-o", 
+            "/home/arden/Programming/cpp/tui/build/source/./main.o", 
+            "main.cpp"
+        ], 
+        "directory": "/home/arden/Programming/cpp/tui/source", 
+        "file": "main.cpp"
+    }
+]
