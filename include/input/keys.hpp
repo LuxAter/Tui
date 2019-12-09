@@ -148,8 +148,9 @@ namespace tui {
     KEY_F9 = 141,
     KEY_F10 = 142,
     KEY_F11 = 143,
-    KEY_F12 = 144
+    KEY_F12 = 144,
+    KEY_TAB = 258,
   };
-}  // namespace tui
+}  // namespace event
 
-#endif /* ifndef TUI_INPUT_KEYS_HPP */
+#endif /* ifndef EVENT_INPUT_KEYS_HPP */
